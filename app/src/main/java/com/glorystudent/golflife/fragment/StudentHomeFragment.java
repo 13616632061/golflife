@@ -6,11 +6,9 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,14 +16,12 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.glorystudent.golflibrary.base.BaseFragment;
-import com.glorystudent.golflibrary.dialog.iosdialog.AlertDialog;
 import com.glorystudent.golflibrary.util.GlideUtil;
 import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflibrary.widget.oywidget.MyListView;
 import com.glorystudent.golflibrary.widget.upmarqueeview.UPMarqueeView;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.activity.EventActivity;
-import com.glorystudent.golflife.activity.LoginActivity;
 import com.glorystudent.golflife.activity.NewsDetailsActivity;
 import com.glorystudent.golflife.activity.TeamManagementActivity;
 import com.glorystudent.golflife.adapter.HomeListAdapter;
@@ -36,9 +32,9 @@ import com.glorystudent.golflife.entity.AdRequestEntity;
 import com.glorystudent.golflife.entity.NewsEntity;
 import com.glorystudent.golflife.entity.NewsRequestEntity;
 import com.glorystudent.golflife.util.Constants;
-import com.glorystudent.golflife.util.ConstantsURL;
+import com.glorystudent.golflife.api.ConstantsURL;
 import com.glorystudent.golflife.util.DialogUtil;
-import com.glorystudent.golflife.util.RequestUtil;
+import com.glorystudent.golflife.api.RequestAPI;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -51,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Response;
@@ -140,7 +135,7 @@ public class StudentHomeFragment extends BaseFragment implements View.OnClickLis
         adBean.setAd_location("1");
         adRequestEntity.setAd(adBean);
         String request = new Gson().toJson(adRequestEntity);
-        String requestJson = RequestUtil.getRequestJson(getActivity(), request);
+        String requestJson = RequestAPI.getRequestJson(getActivity(), request);
         adEntity = new AdEntity();
         OkGo.post(ConstantsURL.QueryAD)
                 .tag(this)
@@ -195,7 +190,7 @@ public class StudentHomeFragment extends BaseFragment implements View.OnClickLis
         newsRequestEntity.setPage(page);
 
         String newsJson2 = new Gson().toJson(newsRequestEntity);
-        String newsrequestJson2 = RequestUtil.getRequestJson(getActivity(), newsJson2);
+        String newsrequestJson2 = RequestAPI.getRequestJson(getActivity(), newsJson2);
         OkGo.post(ConstantsURL.QueryNews)
                 .tag(this)
                 .params("request", newsrequestJson2)
@@ -246,7 +241,7 @@ public class StudentHomeFragment extends BaseFragment implements View.OnClickLis
 
         newsBean.setNews_top("0");
         String newsJson = new Gson().toJson(newsRequestEntity);
-        String newsrequestJson = RequestUtil.getRequestJson(getActivity(), newsJson);
+        String newsrequestJson = RequestAPI.getRequestJson(getActivity(), newsJson);
         OkGo.post(ConstantsURL.QueryNews)
                 .tag(this)//
                 .params("request", newsrequestJson)

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -32,15 +31,13 @@ import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflibrary.dialog.iosdialog.AlertDialog;
 import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflife.R;
-import com.glorystudent.golflife.customView.MyWebChromeClient;
 import com.glorystudent.golflife.customView.SharePopupWindow;
 import com.glorystudent.golflife.entity.ShareModel;
 import com.glorystudent.golflife.entity.WxPayOrderEntity;
 import com.glorystudent.golflife.util.Constants;
-import com.glorystudent.golflife.util.ConstantsURL;
+import com.glorystudent.golflife.api.ConstantsURL;
 import com.glorystudent.golflife.util.EventBusMapUtil;
-import com.glorystudent.golflife.util.PhoneIpUtil;
-import com.glorystudent.golflife.util.RequestUtil;
+import com.glorystudent.golflife.api.RequestAPI;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -144,51 +141,7 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            // For Android < 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg){
-                this.openFileChooser(uploadMsg, "*/*");
-            }
-
-            // For Android >= 3.0
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,
-                                        String acceptType) {
-                this.openFileChooser(uploadMsg, acceptType, null);
-            }
-
-            // For Android >= 4.1
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,
-                                        String acceptType, String capture) {
-                mUploadMessage = uploadMsg;
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.setType("*/*");
-                startActivityForResult(Intent.createChooser(i, "File Browser"),
-                        FILECHOOSER_RESULTCODE);
-            }
-
-            // For Lollipop 5.0+ Devices
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            public boolean onShowFileChooser(WebView mWebView,
-                                             ValueCallback<Uri[]> filePathCallback,
-                                             WebChromeClient.FileChooserParams fileChooserParams) {
-                if (mUploadMessage5 != null) {
-                    mUploadMessage5.onReceiveValue(null);
-                    mUploadMessage5 = null;
-                }
-                mUploadMessage5 = filePathCallback;
-                Intent intent = fileChooserParams.createIntent();
-                try {
-                    startActivityForResult(intent,
-                            FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
-                } catch (ActivityNotFoundException e) {
-                    mUploadMessage5 = null;
-                    return false;
-                }
-                return true;
-            }
-        });
+//处理webview URL跳转事件
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -255,12 +208,63 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
                 super.onProgressChanged(view, newProgress);
             }
         });
-
+        setWebChromeClient();//处理android系统webView调用H5文件上传JS无反应操作
         if (id != -1) {
             weburl = String.format(ConstantsURL.EVENT_DETAIL_URL, id, SharedUtil.getString(Constants.USER_ID));
             webView.loadUrl(weburl);
             System.out.println("weburl="+weburl);
         }
+    }
+
+    /**
+     *  TODO 处理android系统webView调用H5文件上传JS无反应操作
+     */
+    private void setWebChromeClient(){
+        webView.setWebChromeClient(new WebChromeClient() {
+
+            // For Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadMsg){
+                this.openFileChooser(uploadMsg, "*/*");
+            }
+
+            // For Android >= 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadMsg,
+                                        String acceptType) {
+                this.openFileChooser(uploadMsg, acceptType, null);
+            }
+
+            // For Android >= 4.1
+            public void openFileChooser(ValueCallback<Uri> uploadMsg,
+                                        String acceptType, String capture) {
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+                startActivityForResult(Intent.createChooser(i, "File Browser"),
+                        FILECHOOSER_RESULTCODE);
+            }
+
+            // For Lollipop 5.0+ Devices
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            public boolean onShowFileChooser(WebView mWebView,
+                                             ValueCallback<Uri[]> filePathCallback,
+                                             WebChromeClient.FileChooserParams fileChooserParams) {
+                if (mUploadMessage5 != null) {
+                    mUploadMessage5.onReceiveValue(null);
+                    mUploadMessage5 = null;
+                }
+                mUploadMessage5 = filePathCallback;
+                Intent intent = fileChooserParams.createIntent();
+                try {
+                    startActivityForResult(intent,
+                            FILECHOOSER_RESULTCODE_FOR_ANDROID_5);
+                } catch (ActivityNotFoundException e) {
+                    mUploadMessage5 = null;
+                    return false;
+                }
+                return true;
+            }
+        });
     }
     @SuppressLint("NewApi")
     @Override
@@ -316,13 +320,11 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
                 .setNegativeButton("取消", null).show();
     }
     /**
-     * 获取微信统一下单
+     *TODO 获取微信统一下单
      */
     private void accessOrder() {
         showLoading();
-        String hostIP = PhoneIpUtil.getHostIP();
-        String json = "\"wxpay\":{" + "\"order_id\":" + orderId + ",\"clientip\":\"" + hostIP + "\"}";
-        String requestJson = RequestUtil.getJson(this, json);
+        String requestJson = RequestAPI.WXPayAPP(this,orderId+"");
         OkGo.post(ConstantsURL.WXPayAPP)
                 .tag(this)
                 .params("request", requestJson)

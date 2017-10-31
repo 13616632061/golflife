@@ -24,6 +24,7 @@ public interface Constants {
     String EMClient_password="123456";//环信登录密码
     String REFRESH_TIME = "refreshtime";//下拉刷新时间
     String ORDER_ID = "orderId";//订单id
+    String[] SETTING = new String[]{"setting1", "setting2", "setting3", "setting4"};
 
 
     String WX_APPID = "wxd2ec5fc5fab63695";// 获取缓存微信分享的秘钥key值

@@ -4,7 +4,6 @@ package com.glorystudent.golflife.activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,19 +21,17 @@ import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.entity.ResponseSMSCodeEntity;
 import com.glorystudent.golflife.entity.UserEntity;
+import com.glorystudent.golflife.entity.UserInformationEntity;
 import com.glorystudent.golflife.entity.UserRequestEntity;
 import com.glorystudent.golflife.util.Constants;
-import com.glorystudent.golflife.util.ConstantsURL;
-import com.glorystudent.golflife.util.EventBusMapUtil;
-import com.glorystudent.golflife.util.RequestUtil;
+import com.glorystudent.golflife.api.ConstantsURL;
+import com.glorystudent.golflife.util.LoginUtil;
+import com.glorystudent.golflife.api.RequestAPI;
 import com.google.gson.Gson;
-import com.hyphenate.EMCallBack;
-import com.hyphenate.chat.EMClient;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.request.BaseRequest;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -107,61 +104,8 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
                     }
                     break;
                 case LOGIN_SUCCEED:
-                    //登陆成功
-                    openid = (String) map.get("openid");
-                    UserRequestEntity userRequestEntity = new UserRequestEntity();
-                    UserRequestEntity.UserBean userBean = new UserRequestEntity.UserBean();
-                    userBean.setOpenid(openid);
-                    userRequestEntity.setUser(userBean);
-                    String request = new Gson().toJson(userRequestEntity);
-                    String requestJson = RequestUtil.getRequestJson(LoginActivity.this, request);
-                    String url = "/Public/APIPublicUser/QueryUser";
-                    OkGo.post(url)
-                            .tag(this)
-                            .params("request", requestJson)
-                            .execute(new StringCallback() {
-                                @Override
-                                public void onBefore(BaseRequest request) {
-                                    System.out.println("Params"+request.getParams());
-                                    System.out.println("Url"+request.getUrl());
-                                }
-
-                                @Override
-                                public void onSuccess(String s, Call call, Response response) {
-                                    try {
-                                        JSONObject jo = new JSONObject(s);
-                                        String statuscode = jo.getString("statuscode");
-                                        String statusmessage = jo.getString("statusmessage");
-                                        if (statuscode.equals("1")) {
-//                                            UserInformationEntity userInformationEntity = new Gson().fromJson(jo.toString(), UserInformationEntity.class);
-//                                            if (userInformationEntity != null) {
-//                                                List<UserInformationEntity.ListUsersBean> listUsers = userInformationEntity.getListUsers();
-//                                                if (listUsers != null) {
-//                                                    saveUserListSharedPreferences(userInformationEntity);//保存参数
-//                                                    loginUserListHuanxin(userInformationEntity);
-//                                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                                                    finish();
-//                                                } else {
-//                                                    Intent intent = new Intent(LoginActivity.this, BindPhoneNumberActivity.class);
-//                                                    intent.putExtra("openid", openid);
-//                                                    startActivity(intent);
-//                                                }
-//                                            }
-                                        } else if (statuscode.equals("2")) {
-//                                            Intent intent = new Intent(LoginActivity.this, BindPhoneNumberActivity.class);
-//                                            intent.putExtra("openid", openid);
-//                                            startActivity(intent);
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onError(Call call, Response response, Exception e) {
-                                    super.onError(call, response, e);
-                                }
-                            });
+                    //登陆成功 获取信息
+                    getQueryUser();
                     break;
                 case LOGIN_FAILURE:
                     //登陆失败
@@ -179,8 +123,8 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
     @Override
     protected void init() {
         if(SharedUtil.getBoolean(Constants.LOGIN_STATE)){
-//            startActivity(new Intent(this, MainActivity.class));
-//            finish();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
         etPhoneNumber.addTextChangedListener(this);
         cbAgree.setOnCheckedChangeListener(this);
@@ -261,7 +205,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
         } else {
             //获取虚拟短信验证码接口
             handler.sendEmptyMessage(COUNTDOWN);
-            String getCode = RequestUtil.getSMSCheck(LoginActivity.this,etPhoneNumber.getText().toString());
+            String getCode = RequestAPI.getSMSCheck(LoginActivity.this,etPhoneNumber.getText().toString());
             OkGo.post(ConstantsURL.GetSMSCheck)
                     .tag(this)
                     .params("request", getCode)
@@ -301,7 +245,7 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
         } else {
             //进行注册登陆
             userEntity = new UserEntity();
-            String json = RequestUtil.getLogin(LoginActivity.this, etPhoneNumber.getText().toString(),etPhoneCode.getText().toString());
+            String json = RequestAPI.getLogin(LoginActivity.this, etPhoneNumber.getText().toString(),etPhoneCode.getText().toString());
             OkGo.post(ConstantsURL.SMSLogin)
                     .tag(this)//
                     .params("request", json)
@@ -313,8 +257,13 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
                                 System.out.println("登录："+jo);
                                 userEntity = new Gson().fromJson(jo.toString(), UserEntity.class);
                                 if (userEntity.getStatuscode() == 1) {
-                                    saveSharedPreferences(userEntity);//保存参数
-                                    loginHuanxin();
+                                    //保存用户信息参数
+                                    LoginUtil.saveSharedPreferences(userEntity.getUserid(),userEntity.getUserinfo().getUserid(),userEntity.getGroupid(),
+                                            userEntity.getAccesstoken(),userEntity.getUserinfo().getPhonenumber(),(String) userEntity.getUserinfo().getCustomerphoto(),
+                                            (String) userEntity.getUserinfo().getUsername(),userEntity.getUserinfo().getGender(),(int) userEntity.getUserinfo().getGolfage() + "",
+                                            (String) userEntity.getUserinfo().getChinacity_name(),userEntity.getUserinfo().getUsertype());
+                                    //环信登录
+                                    LoginUtil.loginHuanxin(userEntity.getUserinfo().getPhonenumber());
                                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                     finish();
                                 } else {
@@ -326,54 +275,6 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
                         }
                     });
         }
-    }
-
-    /**
-     * TODO 保存用户信息
-     * @param userEntity
-     */
-    private void saveSharedPreferences(UserEntity userEntity) {
-        //保存参数
-        SharedUtil.putBoolean(Constants.LOGIN_STATE, true);
-        SharedUtil.putString(Constants.USER_ID, userEntity.getUserid());
-        SharedUtil.putInt(Constants.NUMBER_ID, userEntity.getUserinfo().getUserid());
-        SharedUtil.putString(Constants.GROUP_ID, userEntity.getGroupid());
-        Log.d("login", "saveSharedPreferences: 1234--->" + userEntity.getGroupid());
-        SharedUtil.putString(Constants.ACCESS_TOKEN, userEntity.getAccesstoken());
-        SharedUtil.putString(Constants.PHONE_NUMBER, userEntity.getUserinfo().getPhonenumber());
-        SharedUtil.putString(Constants.HEAD_PORTRAIT, (String) userEntity.getUserinfo().getCustomerphoto());
-        SharedUtil.putString(Constants.NICKNAME, (String) userEntity.getUserinfo().getUsername());
-        SharedUtil.putString(Constants.SEX, userEntity.getUserinfo().getGender());
-        SharedUtil.putString(Constants.VETERAN, (int) userEntity.getUserinfo().getGolfage() + "");
-        SharedUtil.putString(Constants.ADDRESS, (String) userEntity.getUserinfo().getChinacity_name());
-        String usertype = userEntity.getUserinfo().getUsertype();
-        SharedUtil.putString(Constants.USER_TYPE, usertype);
-    }
-
-    /**
-     * TODO 环信登录
-     */
-    private void loginHuanxin() {
-        String phonenumber = userEntity.getUserinfo().getPhonenumber();
-        String password = Constants.EMClient_password;
-        EMClient.getInstance().login(phonenumber, password, new EMCallBack() {//回调
-            @Override
-            public void onSuccess() {
-                EMClient.getInstance().groupManager().loadAllGroups();
-                EMClient.getInstance().chatManager().loadAllConversations();
-                Log.d("main", "登录聊天服务器成功！");
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-
-            }
-
-            @Override
-            public void onError(int code, String message) {
-                Log.d("main", "登录聊天服务器失败！");
-            }
-        });
     }
 
     /**
@@ -414,6 +315,72 @@ public class LoginActivity extends BaseActivity implements TextWatcher, Compound
             //isValid和removeAccount不开启线程，会直接返回。
         }
     }
+
+    /**
+     * TODO 获取用户信息
+     */
+    private void getQueryUser(){
+        openid = (String) map.get("openid");
+        UserRequestEntity userRequestEntity = new UserRequestEntity();
+        UserRequestEntity.UserBean userBean = new UserRequestEntity.UserBean();
+        userBean.setOpenid(openid);
+        userRequestEntity.setUser(userBean);
+        String request = new Gson().toJson(userRequestEntity);
+        String requestJson = RequestAPI.getRequestJson(LoginActivity.this, request);
+        String url = ConstantsURL.QueryUser;
+        OkGo.post(url)
+                .tag(this)
+                .params("request", requestJson)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onBefore(BaseRequest request) {
+                        System.out.println("Params"+request.getParams());
+                        System.out.println("Url"+request.getUrl());
+                    }
+
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        try {
+                            JSONObject jo = new JSONObject(s);
+                            String statuscode = jo.getString("statuscode");
+                            String statusmessage = jo.getString("statusmessage");
+                            if (statuscode.equals("1")) {
+                                UserInformationEntity userInformationEntity = new Gson().fromJson(jo.toString(), UserInformationEntity.class);
+                                if (userInformationEntity != null) {
+                                    List<UserInformationEntity.ListUsersBean> listUsers = userInformationEntity.getListUsers();
+                                    if (listUsers != null) {
+                                        //保存用户信息参数
+                                        LoginUtil.saveSharedPreferences(userInformationEntity.getUserid() + "",userInformationEntity.getListUsers().get(0).getUserid(),userInformationEntity.getListUsers().get(0).getUserid()+"",
+                                                userInformationEntity.getAccesstoken(),userInformationEntity.getListUsers().get(0).getPhonenumber(),userInformationEntity.getListUsers().get(0).getCustomerphoto(),
+                                                userInformationEntity.getListUsers().get(0).getUsername(),userInformationEntity.getListUsers().get(0).getGender(),userInformationEntity.getListUsers().get(0).getGolfage() + "",
+                                                userInformationEntity.getListUsers().get(0).getChinacity_name(),userInformationEntity.getListUsers().get(0).getUsertype());
+                                        //环信登录
+                                        LoginUtil.loginHuanxin(userInformationEntity.getListUsers().get(0).getPhonenumber());
+                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(LoginActivity.this, BindPhoneNumberActivity.class);
+                                        intent.putExtra("openid", openid);
+                                        startActivity(intent);
+                                    }
+                                }
+                            } else if (statuscode.equals("2")) {
+                                Intent intent = new Intent(LoginActivity.this, BindPhoneNumberActivity.class);
+                                intent.putExtra("openid", openid);
+                                startActivity(intent);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Call call, Response response, Exception e) {
+                        super.onError(call, response, e);
+                    }
+                });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

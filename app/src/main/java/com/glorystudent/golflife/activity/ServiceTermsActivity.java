@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflife.R;
-import com.glorystudent.golflife.util.ConstantsURL;
+import com.glorystudent.golflife.api.ConstantsURL;
 
 import butterknife.Bind;
 import butterknife.OnClick;

@@ -269,7 +269,22 @@
         <activity android:name=".activity.EventDetailActivity" />
         <activity android:name=".activity.MyEventActivity" />
         <activity android:name=".activity.TeamManagementActivity" />
-        <activity android:name=".activity.LookCertificateActivity"></activity>
+        <activity android:name=".activity.LookCertificateActivity" />
+        <activity android:name=".activity.BindPhoneNumberActivity" />
+        <activity android:name=".activity.EventDetail3Activity" />
+        <activity android:name=".activity.EventDetail2Activity" />
+        <activity android:name=".activity.EventReleasedActivity" />
+        <activity android:name=".activity.ImageDetailActivity" />
+        <activity android:name=".activity.ReleasedAddImageActivity" />
+        <activity android:name=".activity.ChoosePitchActivity" />
+        <activity android:name=".activity.ReleasedEventInfoActivity" />
+        <activity android:name=".activity.ReleasedSettingActivity" />
+        <activity android:name=".activity.ReleasedPreviewActivity" />
+        <activity android:name=".activity.LookDetailActivity" />
+        <activity android:name=".activity.PhotoWallActivity" />
+        <activity android:name=".activity.PhotoWallDetailActivity" />
+        <activity android:name=".activity.ApplyListActivity" />
+        <activity android:name=".activity.EventSignUpActivity" />
     </application>
 
 </manifest>

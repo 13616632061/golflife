@@ -19,9 +19,9 @@ import com.glorystudent.golflife.customView.PullableListView;
 import com.glorystudent.golflife.entity.CompetityRequestEntity;
 import com.glorystudent.golflife.entity.EventCompetityEntity;
 import com.glorystudent.golflife.util.Constants;
-import com.glorystudent.golflife.util.ConstantsURL;
+import com.glorystudent.golflife.api.ConstantsURL;
 import com.glorystudent.golflife.util.DialogUtil;
-import com.glorystudent.golflife.util.RequestUtil;
+import com.glorystudent.golflife.api.RequestAPI;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -173,7 +173,7 @@ public class EventActivity extends BaseActivity implements AdapterView.OnItemCli
         competityRequestEntity.getEventactivity().setEventactivity_name(text);
         competityRequestEntity.setPage(page);
         String json = new Gson().toJson(competityRequestEntity);
-        String requestJson = RequestUtil.getRequestJson(this, json);
+        String requestJson = RequestAPI.getRequestJson(this, json);
         OkGo.post(ConstantsURL.QueryEventActivity)
                 .tag(this)
                 .params("request", requestJson)

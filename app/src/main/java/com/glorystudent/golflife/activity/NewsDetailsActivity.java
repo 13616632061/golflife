@@ -24,7 +24,7 @@ import com.glorystudent.golflife.customView.PullToRefreshLayout;
 import com.glorystudent.golflife.customView.SharePopupWindow;
 import com.glorystudent.golflife.entity.NewsEntity;
 import com.glorystudent.golflife.entity.ShareModel;
-import com.glorystudent.golflife.util.ConstantsURL;
+import com.glorystudent.golflife.api.ConstantsURL;
 
 import java.util.HashMap;
 
