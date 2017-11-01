@@ -143,8 +143,10 @@ public class RequestAPI {
         Map<String,Object> map=new HashMap<>();
         map.put("order_id",orderId);
         map.put("clientip",hostIP);
-        String json_str=new GsonBuilder().serializeNulls().create().toJson(map);
-        String json = "\"wxpay\":" + json_str;
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("wxpay",map);
+        String json_str=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json = json_str.substring(1,json_str.length()-1);
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }
@@ -217,8 +219,10 @@ public class RequestAPI {
         Map<String,Object> map=new HashMap<>();
         map.put("cancelrefuse",text);
         map.put("eventActivity_id",eventActivity_id);
-        String json_map=new GsonBuilder().serializeNulls().create().toJson(map);
-        String json = "\"eventactivity\":" + "\"" + json_map+ "\"" ;
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("eventactivity",map);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }
@@ -230,11 +234,11 @@ public class RequestAPI {
     public static String QueryEventActivityPicWall(Context context,String eventActivity_id,String photoWallPage){
         Map<String,Object> map=new HashMap<>();
         map.put("eventactivity_id",eventActivity_id);
-        String json_map=new GsonBuilder().serializeNulls().create().toJson(map);
         Map<String,Object> map1=new HashMap<>();
-        map1.put("eventpic",json_map);
+        map1.put("eventpic",map);
         map1.put("page",photoWallPage);
-        String json=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }
@@ -250,10 +254,10 @@ public class RequestAPI {
         Map<String,Object> map=new HashMap<>();
         map.put("signup_id",Signup_id);
         map.put("sign_ifallow",flag);
-        String json_map=new GsonBuilder().serializeNulls().create().toJson(map);
         Map<String,Object> map1=new HashMap<>();
-        map1.put("signup",json_map);
-        String json=new GsonBuilder().serializeNulls().create().toJson(map1);
+        map1.put("signup",map);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }
@@ -268,11 +272,116 @@ public class RequestAPI {
     public static String QuerySignUpByEventID(Context context,String eventactivity_id,String page){
         Map<String,Object> map=new HashMap<>();
         map.put("sign_activitiesid",eventactivity_id );
-        String json_map=new GsonBuilder().serializeNulls().create().toJson(map);
         Map<String,Object> map1=new HashMap<>();
-        map1.put("signup",json_map);
+        map1.put("signup",map);
         map1.put("page",page);
-        String json=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 获取球队信息
+     * @param context
+     * @param type
+     * @param page
+     * @return
+     */
+    public static String QueryTeam(Context context,String type,String page){
+        Map<String,Object> map1=new HashMap<>();
+        Map<String,Object> map=new HashMap<>();
+        map.put("team",map1);
+        map.put("type",type);
+        map.put("page",page);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map);
+        String json=json1.substring(1,json1.length()-1);
+       String requestJson = RequestAPI.getJson(context, json);
+        return  requestJson;
+    }
+
+    /**
+     * TODO 通过球队名获取球队信息
+     * @param context
+     * @param text
+     * @param type
+     * @param page
+     * @return
+     */
+    public static String QueryTeamByTitile(Context context,String text,String type,String page  ){
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("title",text);
+        Map<String,Object> map=new HashMap<>();
+        map.put("team",map1);
+        map.put("type",type);
+        map.put("page",page);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map);
+        String json=json1.substring(1,json1.length()-1);
+        String requestJson = RequestAPI.getJson(context, json);
+        return  requestJson;
+    }
+    /**
+     * TODO 通过球队名获取球队信息
+     * @param context
+     * @param cid
+     * @param type
+     * @param page
+     * @return
+     */
+    public static String QueryTeamByCityId(Context context,String cid,String type,String page  ){
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("regionid",cid);
+        Map<String,Object> map=new HashMap<>();
+        map.put("team",map1);
+        map.put("type",type);
+        map.put("page",page);
+        String json1=new GsonBuilder().serializeNulls().create().toJson(map);
+        String json=json1.substring(1,json1.length()-1);
+        String requestJson = RequestAPI.getJson(context, json);
+        return  requestJson;
+    }
+    /**
+     * TODO 根据经纬度定位URL
+     * @param latitude
+     * @param longitude
+     * @return
+     */
+    public static String getLocation( String latitude, String longitude){
+        String url = "http://maps.google.cn/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&sensor=true,language=zh-CN";
+        return url;
+    }
+
+    /**
+     * TODO 根据报名id获取凭证信息
+     * @param context
+     * @param signUpId
+     * @return
+     */
+    public static String QueryEventActivityVoucher(Context context,String signUpId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("signUpID",signUpId);
+        String json=new GsonBuilder().serializeNulls().create().toJson(map).replace("{","").replace("}","");
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 取消赛事报名
+     * @param context
+     * @param Signup_id
+     * @param text
+     * @param type
+     * @return
+     */
+    public static String WXPayReFundAPP(Context context,String Signup_id,String text,String type){
+        Map<String,Object> map=new HashMap<>();
+        map.put("sign_id",Signup_id);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("wxpay",map);
+        map1.put("signrefse",text);
+        map1.put("type",type);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }

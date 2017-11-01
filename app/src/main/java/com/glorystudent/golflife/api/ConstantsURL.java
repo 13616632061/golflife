@@ -9,7 +9,7 @@ public interface ConstantsURL {
     String BASE_URL2 = "http://app.pgagolf.cn";
     String BASE_URL3 = "https://192.168.1.168:4431";
     String BASE_URL4 = "http://192.168.1.199:8000";
-    String BASE_URL = BASE_URL2;//请求URL
+    String BASE_URL = BASE_URL4;//请求URL
     //赛事活动默认的图片
     String  imgUrl="http://glorygolflife.oss-cn-shenzhen.aliyuncs.com/XXQ2Lsd0yq3b72wWdapS4a5Rg24MhxF6cxEOYyODBFQ%3D%2Fcompetitions%2Fbanners%2Faf2026710e2859c421fc19f67eca1fc8.png";
 
@@ -39,7 +39,9 @@ public interface ConstantsURL {
     String QueryEventActivityPicWall=BASE_URL+"/Public/APIPublicEventActivityPic/QueryEventActivityPicWall";//获取照片墙数据URL
     String AddEventActivityPic=BASE_URL+"/Public/APIPublicEventActivityPic/AddEventActivityPic";//赛事活动图片添加URL
     String AgreeSignUp=BASE_URL+"/api/APISignUp/AgreeSignUp";//是否允许报名赛事活动URL
-    String WXPayReFundAPP=BASE_URL+"/api/APIWXPay/WXPayReFundAPP";
+    String WXPayReFundAPP=BASE_URL+"/api/APIWXPay/WXPayReFundAPP";//取消赛事报名URL
     String EditSignUp=BASE_URL+"/api/APISignUp/EditSignUp";
     String QuerySignUpByEventID=BASE_URL+"/api/APISignUp/QuerySignUpByEventID";//通过赛事ID获取对应的报名名单URL
+    String QueryTeam=BASE_URL+"/api/APITeam/QueryTeam";//获取球队URL
+    String QueryEventActivityVoucher=BASE_URL+"/Public/APIPublicEventActivity/QueryEventActivityVoucher";//获取报名凭证信息URL
 }

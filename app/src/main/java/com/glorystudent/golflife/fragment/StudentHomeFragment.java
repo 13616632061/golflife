@@ -147,7 +147,6 @@ public class StudentHomeFragment extends BaseFragment implements View.OnClickLis
                         System.out.println("广告URL："+request.getUrl());
                         System.out.println("广告Params："+request.getParams());
                     }
-
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         try {

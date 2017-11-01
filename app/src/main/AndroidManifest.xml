@@ -285,6 +285,9 @@
         <activity android:name=".activity.PhotoWallDetailActivity" />
         <activity android:name=".activity.ApplyListActivity" />
         <activity android:name=".activity.EventSignUpActivity" />
+        <activity android:name=".activity.CreateTeamActivity" />
+        <activity android:name=".activity.SelectTeamCityActivity" />
+        <activity android:name=".activity.TeamDetailActivity"></activity>
     </application>
 
 </manifest>

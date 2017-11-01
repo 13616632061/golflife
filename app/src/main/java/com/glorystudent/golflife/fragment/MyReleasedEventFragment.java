@@ -23,6 +23,7 @@ import com.glorystudent.golflife.entity.EventCompetityEntity;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.request.BaseRequest;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -107,9 +108,16 @@ public class MyReleasedEventFragment extends BaseFragment implements AdapterView
                 .params("request", requestJson)
                 .execute(new StringCallback() {
                     @Override
+                    public void onBefore(BaseRequest request) {
+                        System.out.println("我发布的活动Params："+request.getParams());
+                        System.out.println("我发布的活动URL："+request.getUrl());
+                    }
+
+                    @Override
                     public void onSuccess(String s, Call call, Response response) {
                         try {
                             JSONObject jo = new JSONObject(s);
+                            System.out.println("我发布的活动："+jo);
                             String statuscode = jo.getString("statuscode");
                             String statusmessage = jo.getString("statusmessage");
                             if (statuscode.equals("1")) {

@@ -62,7 +62,7 @@ public class OkGoRequest {
                     public void onSuccess(String s, Call call, Response response) {
                         try {
                             JSONObject jo = new JSONObject(s);
-                            Log.i(TAG, "getAliyunOSS_jo: " + jo);
+                            System.out.println("getAliyunOSS_jo: " + jo);
                             String statuscode = jo.getString("statuscode");
                             String statusmessage = jo.getString("statusmessage");
                             if (statuscode.equals("1")) {

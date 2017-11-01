@@ -65,6 +65,7 @@ import com.glorystudent.golflife.util.TimeUtil;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.request.BaseRequest;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -659,6 +660,7 @@ public class EventReleasedActivity extends BaseActivity {
         //上传图片
         //清空已有图片
         releasedRequestEntity.getEventactivity().getListeventpic().clear();
+
         loadOss();
     }
 
@@ -666,11 +668,13 @@ public class EventReleasedActivity extends BaseActivity {
      * TODO 获取数据
      */
     private void loadOss() {
-        showLoading();
+
         AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
         if (aliyunOSS != null) {
+            System.out.println("aliyunOSS1:");
             getKeyId(aliyunOSS);
         } else {
+            System.out.println("aliyunOSS2:");
             OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
                 @Override
                 public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
@@ -692,6 +696,7 @@ public class EventReleasedActivity extends BaseActivity {
         conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
         OSSLog.enableLog();
         oss = new OSSClient(getApplicationContext(), endpoint, credentialProvider, conf);
+        showLoading();
         for (int i = 0; i < imageList.size(); i++) {
             Log.d(TAG, "setOss: --->路径" + imageList.get(i));
             if (imageList.get(i).contains("http")) {
@@ -1479,6 +1484,10 @@ public class EventReleasedActivity extends BaseActivity {
                 .params("request",requestJson)
                 .execute(new StringCallback() {
                     @Override
+                    public void onBefore(BaseRequest request) {
+                    }
+
+                    @Override
                     public void onSuccess(String s, Call call, Response response) {
                         try {
                             JSONObject jo = new JSONObject(s);
@@ -1520,15 +1529,20 @@ public class EventReleasedActivity extends BaseActivity {
                 .params("request",requestJson)
                 .execute(new StringCallback() {
                     @Override
+                    public void onBefore(BaseRequest request) {
+                        System.out.println("新增活动Params:"+request.getParams());
+                    }
+                    @Override
                     public void onSuccess(String s, Call call, Response response) {
                         try {
                             JSONObject jo = new JSONObject(s);
+                            System.out.println("新增活动:"+jo);
                             String statuscode = jo.getString("statuscode");
                             String statusmessage = jo.getString("statusmessage");
                             if (statuscode.equals("1")) {
                                 Toast.makeText(EventReleasedActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
                                 deleteSaveImage();
-                                EventBus.getDefault().post(EventBusMapUtil.getStringMap("EventActivity", "refresh"));
+                                EventBus.getDefault().post(EventBusMapUtil.getStringMap("MyReleasedEventFragment", "refresh"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

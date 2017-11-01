@@ -22,7 +22,9 @@
 
     <string name="events_activities">赛事活动</string>
     <string name="team_management">球队管理</string>
+    <string name="team_creat">创建球队</string>
     <string name="event_detail">赛事详情</string>
+    <string name="input_ream_name">输入球队名称</string>
     <string name="share_event">分享活动</string>
     <string name="my_event">我的活动</string>
     <string name="released_event">发布活动</string>
@@ -92,5 +94,18 @@
     <string name="event_cancell">取消活动</string>
     <string name="event_text12">扫码签到</string>
     <string name="event_text13">暂无人员报名</string>
+    <string name="search">搜索</string>
+    <string name="my_team">我的球队</string>
+    <string name="near_team">附近的球队</string>
+    <string name="select_city">选择城市</string>
+    <string name="apply_creat_team">申请创建球队</string>
+    <string name="sub">提交</string>
+    <string name="team_name">球队名称</string>
+    <string name="input_team_name">请输入球队名称</string>
+    <string name="creat_tream_time">成立时间</string>
+    <string name="team_address">所在地区</string>
+    <string name="team_info">球队简介</string>
+    <string name="applyer_info">申请人资料</string>
+    <string name="input_name">请输入真实姓名</string>
 
 </resources>

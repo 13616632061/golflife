@@ -182,6 +182,7 @@ public class EventActivity extends BaseActivity implements AdapterView.OnItemCli
                     public void onSuccess(String s, Call call, Response response) {
                         try {
                             JSONObject jo = new JSONObject(s);
+                            System.out.println("我的活动："+jo);
                             String statuscode = jo.getString("statuscode");
                             String statusmessage = jo.getString("statusmessage");
                             if (statuscode.equals("1")) {
@@ -222,9 +223,9 @@ public class EventActivity extends BaseActivity implements AdapterView.OnItemCli
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getEvent(Map<String, String> map) {
+        System.out.println("map="+map);
         if (map.containsKey("EventActivity")) {
             if (map.get("EventActivity").equals("refresh")) {
-                Log.i(TAG, "getEvent: 是否接收到值");
                 isRefresh = true;//刷新
                 page = 1;
                 loadDatas();

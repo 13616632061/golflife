@@ -193,21 +193,21 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
                 return super.shouldOverrideUrlLoading(view, url);
             }
         });
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress == 100) {
-                    // 网页加载完成
-                    pb.setVisibility(View.GONE);
-                } else {
-                    // 加载中
-                    pb.setVisibility(View.VISIBLE);
-                    pb.setProgress(newProgress);
-                }
-                super.onProgressChanged(view, newProgress);
-            }
-        });
+//        webView.setWebChromeClient(new WebChromeClient() {
+//
+//            @Override
+//            public void onProgressChanged(WebView view, int newProgress) {
+//                if (newProgress == 100) {
+//                    // 网页加载完成
+//                    pb.setVisibility(View.GONE);
+//                } else {
+//                    // 加载中
+//                    pb.setVisibility(View.VISIBLE);
+//                    pb.setProgress(newProgress);
+//                }
+//                super.onProgressChanged(view, newProgress);
+//            }
+//        });
         setWebChromeClient();//处理android系统webView调用H5文件上传JS无反应操作
         if (id != -1) {
             weburl = String.format(ConstantsURL.EVENT_DETAIL_URL, id, SharedUtil.getString(Constants.USER_ID));
@@ -264,7 +264,20 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
                 }
                 return true;
             }
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    // 网页加载完成
+                    pb.setVisibility(View.GONE);
+                } else {
+                    // 加载中
+                    pb.setVisibility(View.VISIBLE);
+                    pb.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
+            }
         });
+
     }
     @SuppressLint("NewApi")
     @Override
