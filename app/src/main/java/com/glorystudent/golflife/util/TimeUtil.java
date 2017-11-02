@@ -114,6 +114,21 @@ public class TimeUtil {
         return sTime;
     }
     /**
+     * TODO 根据赛事活动时间返回date类型
+     *
+     * @return
+     */
+    public static Date getDateFromEvent(String time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = format.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+    /**
      * TODO 获取yyyy/MM/dd HH:mm:ss 格式的时间
      *
      * @param time
@@ -274,5 +289,16 @@ public class TimeUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
         String week = sdf.format(date);
         return week;
+    }
+
+    /**
+     * TODO yyyy.MM.dd格式时间
+     * @param date
+     * @return
+     */
+    public static String getTeamAlbumTime(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+        String time = format.format(date);
+        return time;
     }
 }

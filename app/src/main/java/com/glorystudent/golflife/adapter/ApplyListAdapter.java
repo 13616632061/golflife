@@ -298,10 +298,8 @@ public class ApplyListAdapter extends AbsMoreBaseAdapter<ApplyListEntity.Listsig
                     Toast.makeText(context, "拒绝原因不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String json = "\"wxpay\":{" + "\"sign_id\":" + datas.getSignup_id() + "}," + "\"signrefse\":" + "\"" + text + "\"" + "," + "\"type\":" + "\"2\"";
-                String requestJson = RequestAPI.getJson(context, json);
+                String requestJson = RequestAPI.WXPayReFundAPP(context,datas.getSignup_id()+"",text,2+"");
                 Log.i(TAG, "onClick: " + requestJson);
-                String url = "/api/APIWXPay/WXPayReFundAPP";
                 OkGoRequest.getOkGoRequest().setOnOkGoUtilListener(new OkGoRequest.OnOkGoUtilListener() {
                     @Override
                     public void parseDatas(String json) {
@@ -325,7 +323,7 @@ public class ApplyListAdapter extends AbsMoreBaseAdapter<ApplyListEntity.Listsig
                         ((ApplyListActivity) context).dismissLoading();
                         Toast.makeText(context, "网络请求失败", Toast.LENGTH_SHORT).show();
                     }
-                }).getEntityData(context, url, requestJson);
+                }).getEntityData(context,ConstantsURL.WXPayReFundAPP, requestJson);
             }
         });
         //显示popupwindow
@@ -340,17 +338,15 @@ public class ApplyListAdapter extends AbsMoreBaseAdapter<ApplyListEntity.Listsig
     }
 
     /**
-     * 签到和取消签到的方法 1为签到，2签到
+     * 签到和取消签到的方法 1取消签到，2签到
      *
      * @param datas
      * @param state
      */
     private void signUp(final ApplyListEntity.ListsignupBean datas, final String state) {
         ((ApplyListActivity) context).showLoading();
-        String json = "\"signup\":{" + "\"signup_id\":" + datas.getSignup_id() + "," + "\"sign_upstate\":" + "\"" + state + "\"" + "}";
-        String requestJson = RequestAPI.getJson(context, json);
+        String requestJson = RequestAPI.EditSignUp(context, datas.getSignup_id()+"",state);
         Log.i(TAG, "onClick: " + requestJson);
-        String url = "/api/APISignUp/EditSignUp";
         OkGoRequest.getOkGoRequest().setOnOkGoUtilListener(new OkGoRequest.OnOkGoUtilListener() {
             @Override
             public void parseDatas(String json) {
@@ -373,7 +369,7 @@ public class ApplyListAdapter extends AbsMoreBaseAdapter<ApplyListEntity.Listsig
                 ((ApplyListActivity) context).dismissLoading();
                 Toast.makeText(context, "网络请求失败", Toast.LENGTH_SHORT).show();
             }
-        }).getEntityData(context, url, requestJson);
+        }).getEntityData(context,ConstantsURL.EditSignUp, requestJson);
     }
 
     /**

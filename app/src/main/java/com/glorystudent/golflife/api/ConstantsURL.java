@@ -40,8 +40,24 @@ public interface ConstantsURL {
     String AddEventActivityPic=BASE_URL+"/Public/APIPublicEventActivityPic/AddEventActivityPic";//赛事活动图片添加URL
     String AgreeSignUp=BASE_URL+"/api/APISignUp/AgreeSignUp";//是否允许报名赛事活动URL
     String WXPayReFundAPP=BASE_URL+"/api/APIWXPay/WXPayReFundAPP";//取消赛事报名URL
-    String EditSignUp=BASE_URL+"/api/APISignUp/EditSignUp";
+    String EditSignUp=BASE_URL+"/api/APISignUp/EditSignUp";//签到URL
     String QuerySignUpByEventID=BASE_URL+"/api/APISignUp/QuerySignUpByEventID";//通过赛事ID获取对应的报名名单URL
     String QueryTeam=BASE_URL+"/api/APITeam/QueryTeam";//获取球队URL
     String QueryEventActivityVoucher=BASE_URL+"/Public/APIPublicEventActivity/QueryEventActivityVoucher";//获取报名凭证信息URL
+    String CreateTeam=BASE_URL+"/api/APITeam/CreateTeam";//创建球队URL
+    String QueryTeamDetail=BASE_URL+"/api/APITeam/QueryTeamDetail";//获取球队详情URL
+    String SignOutTeam=BASE_URL+"/api/APITeam/SignOutTeam";//退队或球队解散URL
+    String EditTeamInfo=BASE_URL+"/api/APITeam/EditTeamInfo";//更改球队队长URL
+    String QueryTeamUser="/api/APITeam/QueryTeamUser";//获取球队成员URL
+    String QueryFriend=BASE_URL+"/api/APIFriends/QueryFriend";//根据队员手机号搜索URL
+    String EditApplyFriends=BASE_URL+"/api/APIApplyFriends/EditApplyFriends";//更改好友申请状态URL
+    String DeleteFriends=BASE_URL+"/api/APIFriends/DeleteFriends";//删除好友URL
+    String AddApplyFriends=BASE_URL+"/api/APIApplyFriends/AddApplyFriends";//添加申请好友URL
+    String EditFriends=BASE_URL+"/api/APIFriends/EditFriends";//修改好友信息URL
+    String AddTeam=BASE_URL+"/api/APITeam/AddTeam";//申请加入球队URL
+    String QueryTeamEventActivityPhoto=BASE_URL+"/api/APITeam/QueryTeamEventActivityPhoto";//获取球队相册URL
+    String QueryTeamEventActivityPhotoDeatil=BASE_URL+"/api/APITeam/QueryTeamEventActivityPhotoDeatil";//获取球队相册详情URL
+    String EditTeamUserApply=BASE_URL+"/api/APITeam/EditTeamUserApply";//申请入球队处理URL
+    String QueryTeamUserApply=BASE_URL+"/api/APITeam/QueryTeamUserApply";//获取申请入队数据URL
+    String SweepCodeSignUp=BASE_URL+"/api/APISignUp/SweepCodeSignUp";//签到扫码处理URL
 }

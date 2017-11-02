@@ -1559,4 +1559,83 @@ public class EventReleasedActivity extends BaseActivity {
                     }
                 });
     }
+    /**
+     * TODO 带返回值的跳转页面返后执行的回调
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == EVENTINFO_CODE) {
+                //活动详情
+                eventInfo.setText(data.getStringExtra("text"));
+                eventInfo.requestFocus();
+            } else if (requestCode == ADDRESS_CODE) {
+                //赛事地址
+                eventAddress.setText(data.getStringExtra("courtname"));
+                courtid = data.getIntExtra("courtid", -1);
+            } else if (requestCode == ADD_IMAGE_CODE) {
+                //添加图片
+                String url = data.getStringExtra("url");
+                if (url != null) {
+                    imageList.add(url);
+                }
+                UpdateBanner();
+            } else if (requestCode == IMAGE_DETAIL_CODE) {
+                //图片详情
+                if (data.getBooleanExtra("isDelete", false)) {
+                    int position = data.getIntExtra("position", -1);
+                    Log.i(TAG, "onActivityResult: position:" + position);
+                    if (position != -1) {
+                        imageList.remove(position);
+                        Log.i(TAG, "onActivityResult: 图片集合长度:" + imageList.size());
+                        UpdateBanner();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     *TODO  Android6.0申请权限的回调方法
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            // requestCode即所声明的权限获取码，在checkSelfPermission时传入
+            case REQUEST_LOCATION_ACCESS_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 获取到权限，作相应处理（调用定位SDK应当确保相关权限均被授权，否则可能引起定位失败）
+                    initLocation();
+                } else {
+                    // 没有获取到权限，做特殊处理
+                    Toast.makeText(this, "获取位置权限失败，请手动开启", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_CALL_ACCESS_PERMISSIONS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    callPhone(servicePhoneStr);
+                } else {
+                    // 没有获取到权限，做特殊处理
+                    Toast.makeText(this, "请手动打开拨打电话权限", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        releasedRequestEntity = null;
+        finish();
+    }
 }

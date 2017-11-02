@@ -61,7 +61,7 @@
 
         <include layout="@layout/refresh_head" />
 
-        <com.glorystudent.widget.PullableListView
+        <com.glorystudent.golflife.customView.PullableListView
             android:id="@+id/lv_apply_listView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

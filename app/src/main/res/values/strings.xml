@@ -31,6 +31,7 @@
     <string name="event_text21">听说参加的活动越多 进步越快喔</string>
     <string name="no_event">无赛事活动</string>
     <string name="check_event_credentials">查看凭证</string>
+    <string name="apply_credentials">报名凭证</string>
     <string name="cancel_apply">取消报名</string>
     <string name="look_event_detail">查看详情</string>
     <string name="event_credentials_num">凭证号:</string>
@@ -105,7 +106,47 @@
     <string name="creat_tream_time">成立时间</string>
     <string name="team_address">所在地区</string>
     <string name="team_info">球队简介</string>
+    <string name="info">简介</string>
     <string name="applyer_info">申请人资料</string>
     <string name="input_name">请输入真实姓名</string>
+    <string name="telephone_counseling">电话咨询</string>
+    <string name="apply_join">申请加入</string>
+    <string name="team_leader">球队队长</string>
+    <string name="team_city">所属地区</string>
+    <string name="team_size">球队规模</string>
+    <string name="team_people">球队队员</string>
+    <string name="team_activity">球队活动</string>
+    <string name="team_photo">球队相册</string>
+    <string name="team_check">入队审核</string>
+    <string name="edit_teaminfo">编辑球队</string>
+    <string name="palygolf_age">球龄</string>
+    <string name="about_us">关于我们</string>
+    <string name="city">地区</string>
+    <string name="chat_text6">未添加好友 无法显示更多个人资料</string>
+    <string name="repulse">拒绝</string>
+    <string name="agree">通过认证</string>
+    <string name="send">发送</string>
+    <string name="chat_text9">你需要发送验证申请，等待对方通过</string>
+    <string name="chat_text10">打个招呼吧</string>
+    <string name="apply_join_info">入队申请资料</string>
+    <string name="save">保存</string>
+    <string name="name">姓名</string>
+    <string name="sex">性别</string>
+    <string name="phone_number">手机号码</string>
+    <string name="team_text41">差点</string>
+    <string name="team_text42">请输入你的差点</string>
+    <string name="no_album">暂无相册</string>
+    <string name="team_text60">相册那么空 快去上传吧</string>
+    <string name="apply_join_tream">入队申请</string>
+    <string name="team_text55">您还没有入队消息需要审核</string>
+    <string name="team_text56">入队的申请 都在这里显示</string>
+    <string name="apply_join_detailinfo">申请入队信息</string>
+    <string name="agree_join">同意</string>
+    <string name="event_singup">活动签到</string>
+    <string name="event_text16">手动输入有效码</string>
+    <string name="signup_code">签到二维码</string>
+    <string name="event_text18">报名者扫描上面的二维码进行签到</string>
+    <string name="save_code_picture">保存二维码图片</string>
+
 
 </resources>

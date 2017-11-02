@@ -385,4 +385,230 @@ public class RequestAPI {
         String requestJson = RequestAPI.getJson(context, json);
         return requestJson;
     }
+
+    /**
+     * TODO 获取球队详情
+     * @param context
+     * @param teamId
+     * @return
+     */
+    public static String QueryTeamDetail(Context context,String teamId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",teamId);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("team",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 退队或解散
+     * @param context
+     * @param teamId
+     * @return
+     */
+    public static String SignOutTeam(Context context,String teamId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("teamId",teamId);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("teamUser",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 更改球队队长
+     * @param context
+     * @param teamId
+     * @param captainid
+     * @return
+     */
+    public static String EditTeamInfo(Context context,String teamId,String captainid){
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",teamId);
+        map.put("captainid",captainid);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("team",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 获取球队成员
+     * @param context
+     * @param teamId
+     * @param page
+     * @return
+     */
+    public static String QueryTeamUser(Context context,String teamId,String page){
+        Map<String,Object> map=new HashMap<>();
+        map.put("teamId",teamId);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("teamUser",map);
+        map1.put("page",page);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 根据球队成员手机号搜索好友
+     * @param context
+     * @param phoneNumber
+     * @return
+     */
+    public static String QueryFriend(Context context,String phoneNumber){
+        Map<String,Object> map=new HashMap<>();
+        map.put("phonenumber",phoneNumber);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+    /**
+     * TODO 根据ID搜索好友
+     * @param context
+     * @param userid
+     * @return
+     */
+    public static String QueryFriendByUserid(Context context,String userid){
+        Map<String,Object> map=new HashMap<>();
+        map.put("userid",userid);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 获取球队相册
+     * @param context
+     * @param teamId
+     * @return
+     */
+    public static String QueryTeamEventActivityPhoto(Context context,String teamId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",teamId);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("team",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * RODO 获取球队相册详情
+     * @param context
+     * @param eventactivity_id
+     * @return
+     */
+    public static String QueryTeamEventActivityPhotoDeatil(Context context, String eventactivity_id){
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("Photoid",eventactivity_id);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 申请入球队处理
+     * @param context
+     * @param id
+     * @param status 1 同意 2拒绝
+     * @return
+     */
+    public static String EditTeamUserApply(Context context,String id,String status){
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",id);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("applyTeamUser",map);
+        map1.put("status",status);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 获取申请入队数据
+     * @param context
+     * @param teamId
+     * @param page
+     * @return
+     */
+    public static String QueryTeamUserApply(Context context,String teamId,String page){
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",teamId);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("team",map);
+        map1.put("page",page);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 签到和取消签到的方法 1取消签到，2签到
+     * @param context
+     * @param Signup_id
+     * @param state
+     * @return
+     */
+    public static String EditSignUp(Context context,String Signup_id,String state){
+        Map<String,Object> map=new HashMap<>();
+        map.put("signup_id",Signup_id);
+        map.put("sign_upstate",state);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("signup",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+
+    /**
+     * TODO 通过赛事id处理扫码签到
+     * @param context
+     * @param eventIdStr
+     * @return
+     */
+    public static  String SweepCodeSignUpByid(Context context,String eventIdStr){
+        Map<String,Object> map=new HashMap<>();
+        map.put("sign_activitiesid",eventIdStr);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("signup",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return json;
+    }
+    /**
+     * TODO 通过赛事id和凭证号处理扫码签到
+     * @param context
+     * @param eventIdStr
+     * @return
+     */
+    public static  String SweepCodeSignUp(Context context,String eventIdStr,String voucherStr){
+        Map<String,Object> map=new HashMap<>();
+        map.put("sign_activitiesid",eventIdStr);
+        map.put("sign_voucher",voucherStr);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("signup",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return json;
+    }
 }

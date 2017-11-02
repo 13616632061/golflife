@@ -287,7 +287,23 @@
         <activity android:name=".activity.EventSignUpActivity" />
         <activity android:name=".activity.CreateTeamActivity" />
         <activity android:name=".activity.SelectTeamCityActivity" />
-        <activity android:name=".activity.TeamDetailActivity"></activity>
+        <activity android:name=".activity.TeamDetailActivity" />
+        <activity android:name=".activity.TeamIntroductionActivity" />
+        <activity android:name=".activity.EditTeamActivity" />
+        <activity android:name=".activity.TeamMemberActivity" />
+        <activity android:name=".activity.FriendProfileActivity" />
+        <activity android:name=".activity.FriendChatActivity" />
+        <activity android:name=".activity.VerifyInformationActivity" />
+        <activity android:name=".activity.RemarkInfoActivity" />
+        <activity android:name=".activity.ApplicationMaterialActivity" />
+        <activity android:name=".activity.SelectSexActivity" />
+        <activity android:name=".activity.TeamAlbumActivity" />
+        <activity android:name=".activity.TeamAlbumDetailActivity" />
+        <activity android:name=".activity.TeamAlbumPhotoActivity" />
+        <activity android:name=".activity.ApplicationCheckActivity" />
+        <activity android:name=".activity.TeamApplyInfoActivity" />
+        <activity android:name=".activity.TeamInfoActivity" />
+        <activity android:name=".activity.EfficientCodeActivity"></activity>
     </application>
 
 </manifest>
