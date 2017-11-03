@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorGray7"
+    android:background="@color/colorGray2"
     android:orientation="vertical">
     <!--标题栏-->
     <LinearLayout
@@ -14,7 +14,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
 
             <ImageView
                 android:id="@+id/back"
@@ -35,38 +34,26 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="10dp"
-                android:text="活动签到"
+                android:text="地区"
                 android:textColor="@color/colorWhite"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
         </RelativeLayout>
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_efficient_code"
+    <com.glorystudent.golflife.customView.PullToRefreshLayout
+        android:id="@+id/refresh_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/shape_layout_radius"
-        android:gravity="center"
-        android:hint="手机号/报名凭证号"
-        android:padding="12dp"
-        android:textColorHint="@color/colorGray11"
-        android:textSize="17sp" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_sure"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:background="@drawable/shape_cb_label_checked"
-        android:gravity="center"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:text="确定"
-        android:textColor="@color/colorWhite"
-        android:textSize="17sp" />
+        <include layout="@layout/refresh_head" />
+
+        <com.glorystudent.golflife.customView.PullableNoUpListView
+            android:id="@+id/citys_lv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+
+        <include layout="@layout/load_more" />
+
+    </com.glorystudent.golflife.customView.PullToRefreshLayout>
 </LinearLayout>

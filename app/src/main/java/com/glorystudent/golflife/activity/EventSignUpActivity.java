@@ -173,7 +173,7 @@ public class EventSignUpActivity extends BaseActivity {
                     break;
                 case 2://赛事id，凭证号
                     String voucherStr = strings[1];
-                    json=RequestAPI.SweepCodeSignUp(EventSignUpActivity.this,eventIdStr,voucherStr);
+                    json=RequestAPI.SweepCodeSignUp(EventSignUpActivity.this,eventIdStr,voucherStr,1);
                     Log.i(TAG, "onActivityResult: json1-->" + json);
                     handleResult(json);
                     break;

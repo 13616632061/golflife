@@ -595,20 +595,137 @@ public class RequestAPI {
         String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
         return json;
     }
+
     /**
-     * TODO 通过赛事id和凭证号处理扫码签到
+     * TODO 签到 通过凭证号 或者手机号
      * @param context
      * @param eventIdStr
+     * @param voucherStr
+     * @param type 1 凭证号签到 2手机号签到
      * @return
      */
-    public static  String SweepCodeSignUp(Context context,String eventIdStr,String voucherStr){
+    public static  String SweepCodeSignUp(Context context,String eventIdStr,String voucherStr,int type){
         Map<String,Object> map=new HashMap<>();
         map.put("sign_activitiesid",eventIdStr);
-        map.put("sign_voucher",voucherStr);
+        if(type==1){
+            map.put("sign_voucher",voucherStr);
+        }else if(type==2){
+            map.put("sign_phone",voucherStr);
+        }
         Map<String,Object> map1=new HashMap<>();
         map1.put("signup",map);
         String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
         String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
-        return json;
+        String requestJson = RequestAPI.getJson(context, json);
+        return requestJson;
+    }
+    /**
+     * TODO 确认上传头像
+     */
+    public static String editUserHeadPhoto(Context context, String customerphoto) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("customerphoto",customerphoto);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+
+    /**
+     * TODO 修改昵称
+     * @param context
+     * @param nicknameStr
+     * @return
+     */
+    public static String  editUserNickName(Context context,String nicknameStr){
+        Map<String,Object> map=new HashMap<>();
+        map.put("username",nicknameStr);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 修改性别
+     * @param context
+     * @param sexcode
+     * @return
+     */
+    public static String  editUserSex(Context context,String sexcode){
+        Map<String,Object> map=new HashMap<>();
+        map.put("gender",sexcode);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 修改球龄
+     * @param context
+     * @param saveGolfAge
+     * @return
+     */
+    public static String  editGolfAge(Context context,String saveGolfAge){
+        Map<String,Object> map=new HashMap<>();
+        map.put("golfage",saveGolfAge);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+
+    /**
+     * TODO 修改地区
+     * @param context
+     * @param addressid
+     * @param addressName
+     * @return
+     */
+
+    public static String  editUserCity(Context context,String addressid,String addressName){
+        Map<String,Object> map=new HashMap<>();
+        map.put("chinacity",addressid);
+        map.put("chinacity_name",addressName);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("user",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 获取城市区域信息
+     *
+     * @param context
+     * @return
+     */
+    public static String getCitys(Context context) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("pid",0+"");
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("chinacity",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 意见反馈
+     *
+     * @param context
+     * @param feedbackcontext
+     * @return
+     */
+    public static String getOpinion(Context context, String feedbackcontext) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("feedbackcontext",feedbackcontext);
+        map.put("feedbackdatetime",getCurrentTime());
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("feedback",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
     }
 }

@@ -25,6 +25,12 @@ public interface Constants {
     String REFRESH_TIME = "refreshtime";//下拉刷新时间
     String ORDER_ID = "orderId";//订单id
     String[] SETTING = new String[]{"setting1", "setting2", "setting3", "setting4"};
+    String DEFAULT_USERNAME = "用户";
+    String NOTIFICATION = "NotificationState";//新消息通知状态
+    String PROVINCES_NAME = "provincesname";//省名字
+    String CITY_NAME = "cityname";//城市名字
+    String COUNTY_NAME = "countyname";//县区名字
+    String CLOSE = "close";//关闭activity
 
 
     String WX_APPID = "wxd2ec5fc5fab63695";// 获取缓存微信分享的秘钥key值

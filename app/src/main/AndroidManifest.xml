@@ -303,7 +303,20 @@
         <activity android:name=".activity.ApplicationCheckActivity" />
         <activity android:name=".activity.TeamApplyInfoActivity" />
         <activity android:name=".activity.TeamInfoActivity" />
-        <activity android:name=".activity.EfficientCodeActivity"></activity>
+        <activity android:name=".activity.EfficientCodeActivity" />
+        <activity android:name=".activity.MySetActivity" />
+        <activity android:name=".activity.EditProfileActivity" />
+        <activity android:name=".activity.HeadPortraitActivity" />
+        <activity android:name=".activity.EditNicknameActivity" />
+        <activity android:name=".activity.EditSexActivity" />
+        <activity android:name=".activity.SelectProvincesActivity" />
+        <activity android:name=".activity.SelectCitysActivity" />
+        <activity android:name=".activity.SelectCountysActivity" />
+        <activity android:name=".activity.OpinionBackActivity" />
+        <activity android:name=".activity.AboutUsActivity" />
+        <activity android:name=".activity.MyQRcodeActivity" />
+        <activity android:name=".activity.MyWalletActivity" />
+        <activity android:name=".activity.WithdrawalsActivity"></activity>
     </application>
 
 </manifest>

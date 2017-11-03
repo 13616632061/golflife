@@ -3,6 +3,7 @@ package com.glorystudent.golflife.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -20,6 +21,11 @@ import com.glorystudent.golflife.fragment.StudentHomeFragment;
 import com.glorystudent.golflife.fragment.StudentMyFragment;
 import com.glorystudent.golflife.fragment.StudentVideoFragment;
 import com.glorystudent.golflife.util.Constants;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Map;
 
 import butterknife.Bind;
 
@@ -126,5 +132,18 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                     }
                 })
                 .setNegativeButton("取消", null).show();
+    }
+    /**
+     * TODO Event返回处理
+     *
+     * @param map
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getEvent(Map<String, String> map) {
+        if (map.containsKey("MainActivity")) {
+            if (map.get("MainActivity").equals("finish")) {
+                finish();
+            }
+        }
     }
 }

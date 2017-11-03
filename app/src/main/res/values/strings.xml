@@ -147,6 +147,35 @@
     <string name="signup_code">签到二维码</string>
     <string name="event_text18">报名者扫描上面的二维码进行签到</string>
     <string name="save_code_picture">保存二维码图片</string>
+    <string name="my_activity">我的活动</string>
+    <string name="my_collect">我的收藏</string>
+    <string name="my_tream">我的球队</string>
+    <string name="my_wallet">我的钱包</string>
+    <string name="invite_friend">邀请球友</string>
+    <string name="set">设置</string>
+    <string name="edit_personinfo">编辑个人资料</string>
+    <string name="new_message">新消息通知</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="suggestion_feedback">意见反馈</string>
+    <string name="current_version">当前版本</string>
+    <string name="exit_account">退出账号</string>
+    <string name="head_photo">头像</string>
+    <string name="nickname">昵称</string>
+    <string name="account">账号</string>
+    <string name="location_place">定位到的位置</string>
+    <string name="all">全部</string>
+    <string name="set_text17">写下您的宝贵意见</string>
+    <string name="set_text21">在EGOLF上扫描添加我为好友</string>
+    <string name="my_wallet_balance">我的余额(元)</string>
+    <string name="withdraw">提现</string>
+    <string name="transaction_detail">交易明细</string>
+    <string name="select_withdraw_account">请先选择提现账号</string>
+    <string name="withdraw_money">提现金额</string>
+    <string name="wallet_text6">余额 ¥100.00</string>
+    <string name="wallet_all">全部提现</string>
+    <string name="wallet_sure">确认提现</string>
+    <string name="wallet_rule1">单笔最高提现金额50000元，最低10元</string>
+    <string name="wallet_rule2">预计到账时间：3个工作日</string>
 
 
 </resources>

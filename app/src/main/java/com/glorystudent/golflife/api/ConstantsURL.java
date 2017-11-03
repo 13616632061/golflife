@@ -59,5 +59,10 @@ public interface ConstantsURL {
     String QueryTeamEventActivityPhotoDeatil=BASE_URL+"/api/APITeam/QueryTeamEventActivityPhotoDeatil";//获取球队相册详情URL
     String EditTeamUserApply=BASE_URL+"/api/APITeam/EditTeamUserApply";//申请入球队处理URL
     String QueryTeamUserApply=BASE_URL+"/api/APITeam/QueryTeamUserApply";//获取申请入队数据URL
-    String SweepCodeSignUp=BASE_URL+"/api/APISignUp/SweepCodeSignUp";//签到扫码处理URL
+    String SweepCodeSignUp=BASE_URL+"/api/APISignUp/SweepCodeSignUp";//签到URL
+    String EditUser=BASE_URL+"/api/APIUser/EditUser";//编辑用户信息URL
+    String QueryChinaCity=BASE_URL+"/api/APIChinaCity/QueryChinaCity";//获取城市区域信息URL
+    String AddFeedBack=BASE_URL+"/api/APIFeedBack/AddFeedBack";//意见反馈URL
+    String ABOUT_US_URL = "https://www.pgagolf.cn/home/about?VersionNumber=%s";//关于我们URL
+    String GetUserApplyCashInfo=BASE_URL+"/api/APIApplyCash/GetUserApplyCashInfo";//获取用户钱包资金信息URL
 }
