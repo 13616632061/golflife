@@ -89,5 +89,36 @@ public class DialogUtil {
                 });
         builder.create().show();
     }
+    /**
+     * 弹出dialog
+     * @param context
+     * @param title
+     * @param meassage
+     */
+    public void showDialogButton3(Context context, String title, String meassage, String cancel, String sureStr) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+        builder.setMessage(meassage);
+        builder.setTitle(title);
+        builder.setIcon(R.drawable.ic_launcher);
+        builder.setPositiveButton(sureStr,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
 
+                        if (onShowDialogListener != null) {
+                            onShowDialogListener.onSure();
+                        }
+                    }
+                });
+        builder.setNegativeButton(cancel,
+                new android.content.DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (onShowDialogListener != null) {
+                            onShowDialogListener.onCancel();
+                        }
+                    }
+                });
+        builder.create().show();
+    }
 }

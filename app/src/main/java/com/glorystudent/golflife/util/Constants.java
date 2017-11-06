@@ -31,6 +31,7 @@ public interface Constants {
     String CITY_NAME = "cityname";//城市名字
     String COUNTY_NAME = "countyname";//县区名字
     String CLOSE = "close";//关闭activity
+    String NEW_FRIENDS_COUNT = "newfriendscount";//新的朋友条数
 
 
     String WX_APPID = "wxd2ec5fc5fab63695";// 获取缓存微信分享的秘钥key值

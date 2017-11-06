@@ -100,6 +100,7 @@ public class MyWalletActivity extends BaseActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
+                        System.out.println("获取余额："+s);
                         if(!TextUtils.isEmpty(s)){
                             ResponseQueryBalanceEntity queryBalance=new Gson().fromJson(s,ResponseQueryBalanceEntity.class);
                             if(queryBalance.getStatuscode()==1){

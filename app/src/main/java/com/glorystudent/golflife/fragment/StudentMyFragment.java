@@ -10,9 +10,12 @@ import com.glorystudent.golflibrary.util.GlideUtil;
 import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.activity.MainActivity;
+import com.glorystudent.golflife.activity.MyCollectActivity;
 import com.glorystudent.golflife.activity.MyEventActivity;
+import com.glorystudent.golflife.activity.MyInviteActivity;
 import com.glorystudent.golflife.activity.MyQRcodeActivity;
 import com.glorystudent.golflife.activity.MySetActivity;
+import com.glorystudent.golflife.activity.MyTeamActivity;
 import com.glorystudent.golflife.activity.MyWalletActivity;
 import com.glorystudent.golflife.util.Constants;
 import com.thinkcool.circletextimageview.CircleTextImageView;
@@ -84,15 +87,15 @@ public class StudentMyFragment extends BaseFragment {
                 break;
             case R.id.my_tv_team:
                 //我的球队
-//                startActivity(new Intent(getActivity(), MyTeamActivity.class));
+                startActivity(new Intent(getActivity(), MyTeamActivity.class));
                 break;
             case R.id.my_tv_collect:
                 //我的收藏
-//                startActivity(new Intent(getActivity(), MyCollectActivity.class));
+                startActivity(new Intent(getActivity(), MyCollectActivity.class));
                 break;
             case R.id.my_tv_invite:
                 //邀请球友
-//                startActivity(new Intent(getActivity(), MyInviteActivity.class));
+                startActivity(new Intent(getActivity(), MyInviteActivity.class));
                 break;
             case R.id.my_tv_set:
                 //设置

@@ -65,4 +65,20 @@ public interface ConstantsURL {
     String AddFeedBack=BASE_URL+"/api/APIFeedBack/AddFeedBack";//意见反馈URL
     String ABOUT_US_URL = "https://www.pgagolf.cn/home/about?VersionNumber=%s";//关于我们URL
     String GetUserApplyCashInfo=BASE_URL+"/api/APIApplyCash/GetUserApplyCashInfo";//获取用户钱包资金信息URL
+    String QueryUserBank=BASE_URL+"/api/APIUserBankInfo/QueryUserBank";//获取用户银行卡信息URL
+    String DeleteUserBank=BASE_URL+"/api/APIUserBankInfo/DeleteUserBank";//删除用户银行卡信息URL
+    String AddUserBank=BASE_URL+"/api/APIUserBankInfo/AddUserBank";//添加银行卡信息URL
+    String QueryApplyCash=BASE_URL+"/api/APIApplyCash/QueryApplyCash";//获取提现记录URL
+    String UpdateApplyCash=BASE_URL+"/api/APIApplyCash/UpdateApplyCash";//更新提现申请状态URL
+    String GetApplyCash=BASE_URL+"/api/APIApplyCash/GetApplyCash";//获取提现记录详情URL
+    String AddApplyCash=BASE_URL+"/api/APIApplyCash/AddApplyCash";//提现申请URL
+    String QueryCollect=BASE_URL+"/api/APICollect/QueryCollect";//获取收藏数据URL
+    String QueryTVideoComment=BASE_URL+"/api/APITVideoComment/QueryTVideoComment";//获取视频评论URL
+    String AddCollect=BASE_URL+"/api/APICollect/AddCollect";//添加收藏URL
+    String DeleteCollect=BASE_URL+"/api/APICollect/DeleteCollect";//取消收藏URL
+    String  share_video="http://www.pgagolf.cn/home/video?variable=";//分享视频URL
+    String AddTVideoComment=BASE_URL+"/api/APITVideoComment/AddTVideoComment";//添加视频评论URL
+    String EditTVideoCommentBy=BASE_URL+"/api/APITVideoComment/EditTVideoCommentBy";//修改视频点赞URL
+    String QueryUsersByUserID=BASE_URL+"/api/APIUser/QueryUsersByUserID";//通过id查询用户URL
+    String QueryFriends=BASE_URL+"/api/APIFriends/QueryFriends";//获取所有好友URL
 }

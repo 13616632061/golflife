@@ -113,6 +113,17 @@ public class TimeUtil {
         String sTime = format.format(date);
         return sTime;
     }
+    public static String getEventTime(String time) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parse = format.parse(time);
+            String sTime = format.format(parse);
+            return sTime;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * TODO 根据赛事活动时间返回date类型
      *

@@ -176,6 +176,26 @@
     <string name="wallet_sure">确认提现</string>
     <string name="wallet_rule1">单笔最高提现金额50000元，最低10元</string>
     <string name="wallet_rule2">预计到账时间：3个工作日</string>
+    <string name="zhifubao_account">支付宝账户</string>
+    <string name="please_input">请输入</string>
+    <string name="really_name">真实姓名</string>
+    <string name="accomplish">完成</string>
+    <string name="withdraw_detail">提现详情</string>
+    <string name="withdraw_success">提现成功</string>
+    <string name="no_team">您还没有球队</string>
+    <string name="quickly_join_tream">快快加入球队 找到志同道合的组织吧</string>
+    <string name="no_collect">暂无收藏</string>
+    <string name="no_collect_quickly_gocollect">列表这么空，快去收藏吧！</string>
+    <string name="make_comments">发表评论</string>
+    <string name="video_text2">优质评论将会优先显示</string>
+    <string name="scan_code_add">扫描二维码添加</string>
+    <string name="chat_text4">搜索：</string>
+    <string name="system_messages">系统消息</string>
+    <string name="press_chat">按住 说话</string>
+
+
+    <item name="tag_text" type="id"></item>
+    <item name="play_voice" type="id"></item>
 
 
 </resources>

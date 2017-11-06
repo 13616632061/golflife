@@ -728,4 +728,89 @@ public class RequestAPI {
         String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
         return getJson(context, json);
     }
+
+    /**
+     * TODO 获取球队数据
+     * @param context
+     * @param type
+     * @return
+     */
+    public static String QueryTeam(Context context,String type){
+        Map<String,Object> map=new HashMap<>();
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("team",map);
+        map.put("type",type);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 获取视频评论列表
+     *
+     * @param context
+     * @param comment_tvideoid`1
+     * @return
+     */
+    public static String queryTVideoComment(Context context, String comment_tvideoid) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("comment_tvideoid",comment_tvideoid);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("tVideoComment",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 评论视频
+     *
+     * @param context
+     * @param comment_context
+     * @param comment_tvideoid
+     * @return
+     */
+    public static String addTVideoComment(Context context, String comment_context, String comment_tvideoid) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("comment_time",getCurrentTime());
+        map.put("comment_context",comment_context);
+        map.put("comment_status","0");
+        map.put("comment_tvideoid",comment_tvideoid);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("tVideoComment",map);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+    /**
+     * TODO 修改视频点赞
+     *
+     * @param context
+     * @param comment_id
+     * @param commentpraise
+     * @return
+     */
+    public static String editTVideoCommentBy(Context context, String comment_id, String commentpraise) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("comment_id",comment_id);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("tVideoComment",map);
+        map1.put("commentpraise",commentpraise);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
+
+    /**
+     * TODO 通过用户id查询好友
+     * @param context
+     * @param fromrode
+     * @param userid
+     * @return
+     */
+    public static String QueryUsersByUserID(Context context,String fromrode,String userid){
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("fromrode",fromrode);
+        map1.put("uid",userid);
+        String json= new GsonBuilder().serializeNulls().create().toJson(map1);
+        return getJson(context,json);
+    }
 }

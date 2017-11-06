@@ -316,7 +316,20 @@
         <activity android:name=".activity.AboutUsActivity" />
         <activity android:name=".activity.MyQRcodeActivity" />
         <activity android:name=".activity.MyWalletActivity" />
-        <activity android:name=".activity.WithdrawalsActivity"></activity>
+        <activity android:name=".activity.WithdrawalsActivity" />
+        <activity android:name=".activity.SelectAccountActivity" />
+        <activity android:name=".activity.AddAccountActivity" />
+        <activity android:name=".activity.ApplyforRecordActivity" />
+        <activity android:name=".activity.ApplyforDetailActivity" />
+        <activity android:name=".activity.WithdrawalsDetailActivity" />
+        <activity android:name=".activity.MyTeamActivity" />
+        <activity android:name=".activity.MyCollectActivity" />
+        <activity android:name=".activity.VideoDetailsActivity" />
+        <activity android:name=".activity.MyInviteActivity" />
+        <activity android:name=".activity.AddFriendsActivity" />
+        <activity android:name=".activity.PhoneContactActivity" />
+        <activity android:name=".activity.SystemJumpActivity" />
+        <activity android:name=".activity.VideoGraffitiActivity"></activity>
     </application>
 
 </manifest>
