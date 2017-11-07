@@ -192,10 +192,15 @@
     <string name="chat_text4">搜索：</string>
     <string name="system_messages">系统消息</string>
     <string name="press_chat">按住 说话</string>
+    <string name="photo_album">相册</string>
+    <string name="take_film">拍摄</string>
+    <string name="video">视频</string>
+    <string name="new_friend">新的朋友</string>
 
 
     <item name="tag_text" type="id"></item>
     <item name="play_voice" type="id"></item>
+    <item name="tag_username" type="id"></item>
 
 
 </resources>

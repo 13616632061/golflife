@@ -2,8 +2,6 @@ package com.glorystudent.golflife.activity;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -15,7 +13,7 @@ import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.customView.SharePopupWindow;
 import com.glorystudent.golflife.entity.ShareModel;
-import com.glorystudent.golflife.onekeyshare.OnekeyShare;
+import com.glorystudent.golflife.util.onekeyshare.OnekeyShare;
 import com.glorystudent.golflife.util.Constants;
 import com.glorystudent.golflife.util.ImageUtil;
 

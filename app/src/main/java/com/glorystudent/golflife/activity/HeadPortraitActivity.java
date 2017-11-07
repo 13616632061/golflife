@@ -7,8 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflibrary.util.GlideUtil;
 import com.glorystudent.golflibrary.util.SharedUtil;
+import com.glorystudent.golflife.Manifest;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.api.ConstantsURL;
 import com.glorystudent.golflife.api.OkGoRequest;
@@ -72,6 +75,7 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
     }
     @Override
     protected void init() {
+
         String head_pic_url = SharedUtil.getString(Constants.HEAD_PORTRAIT);
         if(head_pic_url != null){
             GlideUtil.loadImageView(this, head_pic_url, mImage);

@@ -813,4 +813,21 @@ public class RequestAPI {
         String json= new GsonBuilder().serializeNulls().create().toJson(map1);
         return getJson(context,json);
     }
+
+    /**
+     * TODO 查询问下支付
+     * @param context
+     * @param orderId
+     * @return
+     */
+   public static String QueryWXPay(Context context,String orderId){
+       Map<String,Object> map=new HashMap<>();
+       map.put("order_id",orderId);
+       Map<String,Object> map1=new HashMap<>();
+       map1.put("wxpay",map);
+       String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+       String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+       return getJson(context, json);
+   }
+
 }

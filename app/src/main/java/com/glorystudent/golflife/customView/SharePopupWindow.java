@@ -18,9 +18,9 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.adapter.ShareAdapter;
 import com.glorystudent.golflife.entity.ShareModel;
-import com.glorystudent.golflife.onekeyshare.OnekeyShare;
-import com.glorystudent.golflife.onekeyshare.OnekeyShareTheme;
-import com.glorystudent.golflife.onekeyshare.ShareContentCustomizeCallback;
+import com.glorystudent.golflife.util.onekeyshare.OnekeyShare;
+import com.glorystudent.golflife.util.onekeyshare.OnekeyShareTheme;
+import com.glorystudent.golflife.util.onekeyshare.ShareContentCustomizeCallback;
 import com.glorystudent.golflife.util.Constants;
 import com.glorystudent.golflife.util.ImageUtil;
 

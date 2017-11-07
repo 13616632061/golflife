@@ -50,7 +50,6 @@ public interface ConstantsURL {
     String EditTeamInfo=BASE_URL+"/api/APITeam/EditTeamInfo";//更改球队队长URL
     String QueryTeamUser="/api/APITeam/QueryTeamUser";//获取球队成员URL
     String QueryFriend=BASE_URL+"/api/APIFriends/QueryFriend";//根据队员手机号搜索URL
-    String EditApplyFriends=BASE_URL+"/api/APIApplyFriends/EditApplyFriends";//更改好友申请状态URL
     String DeleteFriends=BASE_URL+"/api/APIFriends/DeleteFriends";//删除好友URL
     String AddApplyFriends=BASE_URL+"/api/APIApplyFriends/AddApplyFriends";//添加申请好友URL
     String EditFriends=BASE_URL+"/api/APIFriends/EditFriends";//修改好友信息URL
@@ -81,4 +80,8 @@ public interface ConstantsURL {
     String EditTVideoCommentBy=BASE_URL+"/api/APITVideoComment/EditTVideoCommentBy";//修改视频点赞URL
     String QueryUsersByUserID=BASE_URL+"/api/APIUser/QueryUsersByUserID";//通过id查询用户URL
     String QueryFriends=BASE_URL+"/api/APIFriends/QueryFriends";//获取所有好友URL
+    String QueryWXPay=BASE_URL+"/api/APIWXPay/QueryWXPay";//获取微信支付URL
+    String QueryUsersBy=BASE_URL+"/api/APIUser/QueryUsersBy";//获取用户信息URL
+    String QueryApplyFriends=BASE_URL+"/api/APIApplyFriends/QueryApplyFriends";//获取新朋友申请URL
+    String EditApplyFriends=BASE_URL+"/api/APIApplyFriends/EditApplyFriends";//好友申请处理URL，1同意 2拒绝
 }
