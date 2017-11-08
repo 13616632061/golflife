@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -14,11 +15,13 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,6 +85,7 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
+import com.hyphenate.util.ImageUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -91,10 +95,12 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -227,11 +233,16 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
         sdCardPath1 = ImageUtil.getSDCardPath();
         Intent intent = getIntent();
-        String userName = intent.getStringExtra("username");
-        phoneNumber = intent.getStringExtra("phonenumber");
+        String userName="";
+        if(intent!=null){
+            userName = intent.getStringExtra("username");
+            phoneNumber = intent.getStringExtra("phonenumber");
+        }
+        System.out.println("userName="+userName +" phoneNumber : "+ phoneNumber );
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(phoneNumber);
         //指定会话消息未读数清零
         if (conversation != null) {
+            System.out.println("conversation" );
             conversation.markAllMessagesAsRead();
             EventBus.getDefault().post(EventBusMapUtil.getIntMap(11, 1));
         }
@@ -453,6 +464,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             sendCloudVideo();
         }
         getTop();
+
     }
     private boolean isKeyBoardshow = false;
 
@@ -489,6 +501,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             return true;
         }
         return onTouchEvent(ev);
+
     }
 
     public void getTop() {
@@ -856,7 +869,8 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         iv_graph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takeCameraSend();
+                checkCameraPermission();
+//                takeCameraSend();
             }
         });
 
@@ -870,27 +884,63 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         });
         ll_more.addView(more);
     }
+    private String mPublicPhotoPath;
+    private String path;
+    private Uri uri;
 
-    //拍照
-    private void takeCameraSend() {
-        try {
-            String path = ImageUtil.getSDCardPath();
-            File file = new File(path + "/" + System.currentTimeMillis() + ".jpg");
-            imageUri = Uri.fromFile(file);
-            Intent intent = null;
-            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//action is capture
-            intent.putExtra("return-data", false);
-
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-            intent.putExtra("noFaceDetection", true);
-            startActivityForResult(intent, 0x864);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(FriendChatActivity.this, "请手动打开相机权限", Toast.LENGTH_SHORT).show();
+    /**
+     * TODO 拍照
+     */
+    private void startTake() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //判断是否有相机应用
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            //创建临时图片文件
+            File photoFile = null;
+            try {
+                photoFile = createPublicImageFile();
+            //设置Action为拍照
+            if (photoFile != null) {
+                takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                //这里加入flag
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri photoURI = FileProvider.getUriForFile(this, FriendChatActivity.this.getPackageName() + ".fileprovider", photoFile);
+                List<ResolveInfo> resInfoList= getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = FriendChatActivity.this.getPackageName();
+                    grantUriPermission(packageName, photoURI,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, 0x864);
+            }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("拍照error："+e.toString());
+            }
         }
+        //将照片添加到相册中
+        ImageUtil.galleryAddPic(mPublicPhotoPath, this);
     }
-
+    /**
+     * TODO 创建临时图片文件
+     *
+     * @return
+     * @throws IOException
+     */
+    public  File createPublicImageFile() throws IOException {
+        File path = null;
+        if (ImageUtil.hasSdcard()) {
+            path = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DCIM);
+        }
+        Date date = new Date();
+        String timeStamp = TimeUtil.getTimelocale(date,"yyyyMMdd_HHmmss", Locale.CHINA);
+        String imageFileName = "Camera/" + "IMG_" + timeStamp + ".jpg";
+        File image = new File(path, imageFileName);
+        mPublicPhotoPath = image.getAbsolutePath();
+        return image;
+    }
     //发送视频
     private void sendVideo() {
         Intent intent = new Intent();
@@ -900,7 +950,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         startActivityForResult(intent, 0x056);
     }
 
-    //从相册里选择图片
+    //TODO 从相册里选择图片
     private void intoPhotoAlbum() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -920,11 +970,11 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                case 0x158:
-                    if (data != null) {
-                        Uri uri = data.getData();
-                        sendImage(uri);
-                    }
+                case 0x158://相册
+                    if (data == null) return;
+                    uri = data.getData();
+                    sendImage(uri,1);
+
                     break;
                 case 0x056:
                     if (data != null) {
@@ -992,23 +1042,37 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                         }
                     }
                     break;
-                case 0x864:
-                    sendImage(imageUri);
+                case 0x864://拍照
+                    if (resultCode != Activity.RESULT_OK) return;
+                    uri = Uri.parse(mPublicPhotoPath);
+                    sendImage(uri,2);
                     break;
             }
         }
 
     }
-
-
     /**
      * TODO 发送图片
      *
      * @param uri
+     * @param type 1相册获取 图片 2拍照
      */
-    private void sendImage(Uri uri) {
+    private void sendImage(Uri uri,int type) {
+        if(type==1){
+            int sdkVersion = Integer.valueOf(Build.VERSION.SDK);
+            if (sdkVersion >= 19) {  // 或者 android.os.Build.VERSION_CODES.KITKAT这个常量的值是19
+                path = this.uri.getPath();//5.0直接返回的是图片路径 Uri.getPath is ：  /document/image:46 ，5.0以下是一个和数据库有关的索引值
+                // path_above19:/storage/emulated/0/girl.jpg 这里才是获取的图片的真实路径
+                path =ImageUtil.getPath_above19(this, this.uri);
+            } else {
+                path = ImageUtil.getFilePath_below19(this, this.uri);
+            }
+        }else {
+           path = uri.getPath();
+        }
         //imagePath为图片本地路径，false为不发送原图（默认超过100k的图片会压缩后发给对方），需要发送原图传true
-        EMMessage imageSendMessage = EMMessage.createImageSendMessage(uri.getPath(), false, phoneNumber);
+        System.out.println("图片path:"+path);
+        EMMessage imageSendMessage = EMMessage.createImageSendMessage(path, false, phoneNumber);
         //如果是群聊，设置chattype，默认是单聊
         EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
         imageSendMessage.setMessageStatusCallback(new EMCallBack() {
@@ -1033,7 +1097,6 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             }
         });
     }
-
     /**
      * todo 开始底部设置
      */
@@ -1517,6 +1580,55 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                     tv_username.setText(showRemark);
                 }
             }
+        }
+    }
+    /**
+     * TODO 检查相机权限
+     */
+    private static final int REQUEST_CAMERA_ACCESS_PERMISSION = 1;
+    private static final int REQUEST_WRITE_STORAGE_PERMISSION = 2;
+    private void checkCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_ACCESS_PERMISSION);
+        } else {
+            checkWriteStoragePermission();
+        }
+    }
+
+    /**
+     * TODO 检查写入SDK权限
+     */
+    private void checkWriteStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE_PERMISSION);
+        } else {
+//            takeCameraSend();
+            startTake();
+        }
+    }
+    /**
+     * TODO 获取权限接口
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CAMERA_ACCESS_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkWriteStoragePermission();
+            } else {
+                Toast.makeText(this, "CAMERA PERMISSION DENIED", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_WRITE_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                takeCameraSend();
+                startTake();
+            } else {
+                Toast.makeText(this, "WRITE_EXTERNAL_STORAGE PERMISSION DENIED", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
     @Override

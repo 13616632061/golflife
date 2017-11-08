@@ -83,6 +83,16 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/NoActionBar">
+        <!--处理7.0以上获取拍照相册uri兼容问题-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.glorystudent.golflife.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
         <!-- 设置环信应用的AppKey -->
         <meta-data

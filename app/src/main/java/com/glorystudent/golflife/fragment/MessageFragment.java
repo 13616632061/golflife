@@ -273,10 +273,6 @@ public class MessageFragment extends BaseFragment implements OnSwipeMenuItemClic
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     /**
      * TODO 好友列表点击事件
@@ -296,7 +292,7 @@ public class MessageFragment extends BaseFragment implements OnSwipeMenuItemClic
             intent.putExtra("username", data.getName());
         }
         intent.putExtra("phonenumber", data.getPhoneNumber());
-        startActivity(intent);
+//        startActivity(intent);
     }
 
     @Override
@@ -396,8 +392,6 @@ public class MessageFragment extends BaseFragment implements OnSwipeMenuItemClic
             loadDatas();
         }
     }
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();

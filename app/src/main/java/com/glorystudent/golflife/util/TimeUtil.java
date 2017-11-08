@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Created by Gavin.J on 2017/10/25.
@@ -311,5 +312,17 @@ public class TimeUtil {
         SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd");
         String time = format.format(date);
         return time;
+    }
+
+    /**
+     * TODO 获取时间的方法
+     * @param date
+     * @param mode
+     * @param locale
+     * @return
+     */
+   public static String getTimelocale(Date date, String mode, Locale locale) {
+        SimpleDateFormat format = new SimpleDateFormat(mode, locale);
+        return format.format(date);
     }
 }
