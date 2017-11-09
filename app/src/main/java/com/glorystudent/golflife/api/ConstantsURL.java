@@ -84,4 +84,6 @@ public interface ConstantsURL {
     String QueryUsersBy=BASE_URL+"/api/APIUser/QueryUsersBy";//获取用户信息URL
     String QueryApplyFriends=BASE_URL+"/api/APIApplyFriends/QueryApplyFriends";//获取新朋友申请URL
     String EditApplyFriends=BASE_URL+"/api/APIApplyFriends/EditApplyFriends";//好友申请处理URL，1同意 2拒绝
+    String QueryTeachingVideoCategoryAll=BASE_URL+"/api/APITeachingVideoCategory/QueryTeachingVideoCategoryAll";//获取教学视频分类URL
+    String QueryTeachingVideo=BASE_URL+"/api/APITeachingVideo/QueryTeachingVideo";//获取教学视频URL
 }

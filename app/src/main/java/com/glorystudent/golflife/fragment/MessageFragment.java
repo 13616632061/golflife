@@ -292,7 +292,7 @@ public class MessageFragment extends BaseFragment implements OnSwipeMenuItemClic
             intent.putExtra("username", data.getName());
         }
         intent.putExtra("phonenumber", data.getPhoneNumber());
-//        startActivity(intent);
+        startActivity(intent);
     }
 
     @Override

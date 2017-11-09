@@ -51,18 +51,18 @@ public class ChooseVideoActivity extends BaseActivity implements AdapterView.OnI
 
     private void createDatas(){
         datas = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from img", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from videoModel", null);
         int count = cursor.getCount();
         if (cursor != null && count > 0) {
             while (cursor.moveToPosition(count - 1)) {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 String title = cursor.getString(cursor.getColumnIndex("title"));
-                String context = cursor.getString(cursor.getColumnIndex("context"));
-                String date = cursor.getString(cursor.getColumnIndex("time"));
+                String context = cursor.getString(cursor.getColumnIndex("content"));
+                String date = cursor.getString(cursor.getColumnIndex("duration"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
                 String type = cursor.getString(cursor.getColumnIndex("type"));
                 String zippath = cursor.getString(cursor.getColumnIndex("zippath"));
-                byte[] in = cursor.getBlob(cursor.getColumnIndex("pic"));
+                byte[] in = cursor.getBlob(cursor.getColumnIndex("picBytes"));
                 Bitmap bitmap2 = null;
                 if (in != null) {
                     bitmap2 = BitmapFactory.decodeByteArray(in, 0, in.length);

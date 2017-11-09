@@ -105,5 +105,20 @@ public class LocalVideoEntity implements Serializable {
     public void setContext(String content) {
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "LocalVideoEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", bitmap=" + bitmap +
+                ", content='" + content + '\'' +
+                ", date='" + date + '\'' +
+                ", path='" + path + '\'' +
+                ", type='" + type + '\'' +
+                ", zipPath='" + zipPath + '\'' +
+                ", time='" + time + '\'' +
+                '}';
+    }
 }
 

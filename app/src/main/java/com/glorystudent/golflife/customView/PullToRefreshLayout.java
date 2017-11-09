@@ -15,6 +15,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+
 import com.glorystudent.golflibrary.util.SharedUtil;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.util.Constants;
@@ -617,7 +618,8 @@ public class PullToRefreshLayout extends RelativeLayout {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void onLayout(boolean changed, int l, int t, int r, int b){
+        try{
         if (!isLayout) {
             // 这里是第一次进来的时候做一些初始化
             refreshView = getChildAt(0);
@@ -633,15 +635,21 @@ public class PullToRefreshLayout extends RelativeLayout {
         // 改变子控件的布局，这里直接用(pullDownY + pullUpY)作为偏移量，这样就可以不对当前状态作区分
         refreshView.layout(0,
                 (int) (pullDownY + pullUpY) - refreshView.getMeasuredHeight(),
+
                 refreshView.getMeasuredWidth(), (int) (pullDownY + pullUpY));
-        pullableView.layout(0, (int) (pullDownY + pullUpY),
-                pullableView.getMeasuredWidth(), (int) (pullDownY + pullUpY)
-                        + pullableView.getMeasuredHeight());
+
+            pullableView.layout(0, (int) (pullDownY + pullUpY),
+                    pullableView.getMeasuredWidth(), (int) (pullDownY + pullUpY)
+                            + pullableView.getMeasuredHeight());
+
         loadmoreView.layout(0,
                 (int) (pullDownY + pullUpY) + pullableView.getMeasuredHeight(),
                 loadmoreView.getMeasuredWidth(),
                 (int) (pullDownY + pullUpY) + pullableView.getMeasuredHeight()
                         + loadmoreView.getMeasuredHeight());
+        }catch (Exception e){
+            System.out.println("pullableView_error: "+e.toString());
+        }
     }
 
     class MyTimer {

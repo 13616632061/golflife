@@ -17,16 +17,6 @@ android {
         }
     }
 }
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        def requested = details.requested
-        if (requested.group == 'com.android.support') {
-            if (!requested.name.startsWith("multidex")) {
-                details.useVersion '24.1.0'
-            }
-        }
-    }
-}
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -58,7 +48,5 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.7.2'
     compile 'com.yanzhenjie:recyclerview-swipe:1.0.2'
     compile 'com.contrarywind:Android-PickerView:3.2.3'
-
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.26'
-
 }

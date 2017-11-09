@@ -13,8 +13,9 @@ public class RequestDataHeader {
     private  String datetime;//发送时间
     private  String messagetoken;//消息令牌
     private  String devicetype;//设备类型  4表示安卓设备
+    private String appType;//app类型
 
-    public RequestDataHeader(String userid, String groupid, String accesstoken, String version, String datetime, String messagetoken, String devicetype) {
+    public RequestDataHeader(String userid, String groupid, String accesstoken, String version, String datetime, String messagetoken, String devicetype, String appType) {
         this.userid = userid;
         this.groupid = groupid;
         this.accesstoken = accesstoken;
@@ -22,6 +23,7 @@ public class RequestDataHeader {
         this.datetime = datetime;
         this.messagetoken = messagetoken;
         this.devicetype = devicetype;
+        this.appType = appType;
     }
 
     public String getUserid() {
@@ -80,6 +82,14 @@ public class RequestDataHeader {
         this.devicetype = devicetype;
     }
 
+    public String getAppType() {
+        return appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType;
+    }
+
     @Override
     public String toString() {
         return "RequestDataHeader{" +
@@ -90,6 +100,7 @@ public class RequestDataHeader {
                 ", datetime='" + datetime + '\'' +
                 ", messagetoken='" + messagetoken + '\'' +
                 ", devicetype='" + devicetype + '\'' +
+                ", appType='" + appType + '\'' +
                 '}';
     }
 }

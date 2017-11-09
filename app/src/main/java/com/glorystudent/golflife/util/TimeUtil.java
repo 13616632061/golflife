@@ -28,6 +28,25 @@ public class TimeUtil {
         return t;
     }
     /**
+     * TODO 给定毫秒数，获取HH:mm:ss格式时间
+     *
+     * @param time
+     * @return
+     */
+    public static String getToDay(int time) {
+        int h = time / 1000 / 60 / 60;
+        int m = time / 1000 / 60 % 60;
+        int s = time / 1000 % 60;
+        String hh = h < 10 ? "0" + h : h + "";
+        String mm = m < 10 ? "0" + m : m + "";
+        String ss = s < 10 ? "0" + s : s + "";
+        if (h == 0) {
+            return mm + ":" + ss;
+        } else {
+            return hh + ":" + mm + ":" + ss;
+        }
+    }
+    /**
      * TODO 根据指定格式获取时间毫秒数，格式：yyyy年MM月dd日 HH:mm
      *
      * @param str
@@ -324,5 +343,18 @@ public class TimeUtil {
    public static String getTimelocale(Date date, String mode, Locale locale) {
         SimpleDateFormat format = new SimpleDateFormat(mode, locale);
         return format.format(date);
+    }
+    /**
+     * TODO 给定秒数，获取mm:ss格式时间
+     *
+     * @param time
+     * @return
+     */
+    public static String getMinuteAndSecond(int time) {
+        int m = time / 60 % 60;
+        int s = time % 60;
+        String mm = m < 10 ? "0" + m : m + "";
+        String ss = s < 10 ? "0" + s : s + "";
+        return mm + ":" + ss;
     }
 }

@@ -12,6 +12,7 @@ public interface Constants {
     String GROUP_ID = "groupid";//学院ID
     String ACCESS_TOKEN = "accesstoken";//帐户令牌
     String DEVICE_TYPE="4";//设备类型  4表示安卓设备
+    String APP_TYPE="user";//APP类型
     String REGISTRATION_ID = "registrationid";
     String NUMBER_ID = "numberid";//用户id的数字形态
     String PHONE_NUMBER = "phonenumber";//手机号(账号)

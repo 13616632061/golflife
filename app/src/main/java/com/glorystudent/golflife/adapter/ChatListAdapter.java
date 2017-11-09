@@ -267,19 +267,16 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                                 });
                             }
                         }
-
                     }
                     break;
-                case "IMAGE":
-                    //发送图片、视频
+                case "VIDEO":
+                    //视频
                     ll_layout2.setBackgroundColor(Color.TRANSPARENT);
                     ll_layout2.removeAllViews();
-                    View inflate = LayoutInflater.from(context).inflate(R.layout.item_chat_img_list, null);
-                    RelativeLayout rl_img = (RelativeLayout) inflate.findViewById(R.id.rl_img);
-                    final ImageView iv = (ImageView) inflate.findViewById(R.id.iv_img);
+                    View inflate = LayoutInflater.from(context).inflate(R.layout.item_chat_video_list, null);
+                    RelativeLayout rl_img = (RelativeLayout) inflate.findViewById(R.id.rl_video);
                     ImageView iv_play = (ImageView) inflate.findViewById(R.id.iv_play);
                     TextView tv_progress = (TextView) inflate.findViewById(R.id.tv_progress);
-                    Log.d(TAG, "bindDatas: --->我真是最了" + SharedUtil.getString(Constants.USER_ID) + " " + datas.getExt());
                     if (datas.getExt() != null) {
                         if (!datas.getExt().getVideoMD5().contains("/")) {
                             //下载
@@ -297,6 +294,13 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                         tv_progress.setVisibility(View.GONE);
                         iv_play.setVisibility(View.GONE);
                     }
+                    break;
+                case "IMAGE":
+                    //图片
+                    ll_layout2.setBackgroundColor(Color.TRANSPARENT);
+                    ll_layout2.removeAllViews();
+                    View inflate_image = LayoutInflater.from(context).inflate(R.layout.item_chat_img_list, null);
+                    final ImageView iv = (ImageView)inflate_image.findViewById(R.id.iv_img);
                     Glide.with(context).load(datas.getTxt()).asBitmap().into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -314,7 +318,7 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                         }
                     });
                     GlideUtil.loadImageView(context, datas.getTxt(), iv);
-                    ll_layout2.addView(inflate);
+                    ll_layout2.addView(inflate_image);
                     break;
                 case "VOICE":
                     //发送语音
@@ -417,8 +421,9 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                     e.printStackTrace();
                 }
                 break;
-            case R.id.rl_img:
+            case R.id.rl_video:
                 //下载视频
+                System.out.println("点击了视频");
                 RelativeLayout rl_img = (RelativeLayout) v;
                 final TextView tv_progress = (TextView) rl_img.findViewById(R.id.tv_progress);
                 ImageView iv_play = (ImageView) rl_img.findViewById(R.id.iv_play);
@@ -446,7 +451,6 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                     public void run() {
                         String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
                         String filename = System.currentTimeMillis() + ".mp4";
-                        Log.d(TAG, "run: --->" + filename);
                         GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(context));
                         getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
                             @Override
@@ -478,7 +482,6 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                         getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
                             @Override
                             public void onDownComplete(String path) {
-                                Log.d(TAG, "onDownComplete: 视频--->下载完成" + path);
                                 if (tMD5 != null) {
                                     downLoadText(tMD5, tFolder, path, tv_progress);
                                 } else {
@@ -494,11 +497,9 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
 
                 AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
                 if (aliyunOSS != null) {
-                    Log.d(TAG, "getOssSucceed: ---->不为空");
                     setKeyId(aliyunOSS);
                     thread.start();
                 } else {
-                    Log.d(TAG, "getOssSucceed: ---->为空");
                     OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
                         @Override
                         public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
@@ -508,6 +509,7 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                     }).getAliyunOSS(context);
                 }
                 break;
+
         }
     }
 

@@ -139,4 +139,23 @@ public class ChatEntity implements AbsMoreBaseAdapter.OnType{
 
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "ChatEntity{" +
+                "username='" + username + '\'' +
+                ", chatType='" + chatType + '\'' +
+                ", videoType='" + videoType + '\'' +
+                ", txt='" + txt + '\'' +
+                ", time='" + time + '\'' +
+                ", videoPath='" + videoPath + '\'' +
+                ", voicePath='" + voicePath + '\'' +
+                ", length=" + length +
+                ", chatTime='" + chatTime + '\'' +
+                ", upState=" + upState +
+                ", textType='" + textType + '\'' +
+                ", systemExtMessageEntity=" + systemExtMessageEntity +
+                ", ext=" + ext +
+                '}';
+    }
 }

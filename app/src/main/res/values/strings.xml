@@ -196,6 +196,11 @@
     <string name="take_film">拍摄</string>
     <string name="video">视频</string>
     <string name="new_friend">新的朋友</string>
+    <string name="no_video">暂无视频</string>
+    <string name="video_text20">这里的视频都可以学习并分享给好友</string>
+    <string name="video_text21">快来</string>
+    <string name="video_text22">点击</string>
+    <string name="video_text23">图片立即刷新吧</string>
 
 
     <item name="tag_text" type="id"></item>

@@ -80,6 +80,41 @@ public class ImageUtil {
         return image;
     }
     /**
+     * 保存图片JPG
+     *
+     * @param mBitmap
+     * @param bitName
+     */
+    public static String saveBitmapToJPG(Bitmap mBitmap, String bitName) {
+        File f = new File(getSDCardPath() + "/" + bitName + ".jpg");
+
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        FileOutputStream fOut = null;
+        try {
+            fOut = new FileOutputStream(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+        try {
+            fOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return f.getPath();
+    }
+    /**
      * TODO 保存图片
      *
      * @param mBitmap

@@ -84,7 +84,7 @@ public class RequestAPI {
      */
     public static String getJson(Context context, String query) {
         RequestDataHeader requestDataHeader=new RequestDataHeader(SharedUtil.getString(Constants.USER_ID),SharedUtil.getString(Constants.GROUP_ID),
-                SharedUtil.getString(Constants.ACCESS_TOKEN),getVersion(context),getCurrentTime(),"",Constants.DEVICE_TYPE);
+                SharedUtil.getString(Constants.ACCESS_TOKEN),getVersion(context),getCurrentTime(),"",Constants.DEVICE_TYPE,Constants.APP_TYPE);
         String json=new GsonBuilder().serializeNulls().create().toJson(requestDataHeader).replace("}","")+","+query+"}";
         return json;
     }
@@ -102,6 +102,7 @@ public class RequestAPI {
         map.put("version",getVersion(context));
         map.put("datetime",getCurrentTime());
         map.put("DeviceType",Constants.DEVICE_TYPE);
+        map.put("appType",Constants.APP_TYPE);
         String json=new GsonBuilder().serializeNulls().create().toJson(map);
         return json;
     }
@@ -830,4 +831,21 @@ public class RequestAPI {
        return getJson(context, json);
    }
 
+    /**
+     * TODO 获取教学视频
+     * @param context
+     * @param id
+     * @param page
+     * @return
+     */
+    public static String getTeachVideo(Context context,String id,String page){
+        Map<String,Object> map=new HashMap<>();
+        map.put("teachingvideo_categoryid",id);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("teachingVideo",map);
+        map1.put("page",page);
+        String json1= new GsonBuilder().serializeNulls().create().toJson(map1);
+        String json=json1.substring(1,json1.length()-1);//去掉首尾的{}
+        return getJson(context, json);
+    }
 }

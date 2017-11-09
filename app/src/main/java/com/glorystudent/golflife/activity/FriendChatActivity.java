@@ -109,7 +109,7 @@ import butterknife.OnClick;
 /**
  * TODO 好友聊天页面
  */
-public class FriendChatActivity extends BaseActivity implements TextView.OnEditorActionListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
+public class FriendChatActivity extends BaseActivity implements TextView.OnEditorActionListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener{
 
     private final static String TAG = "FriendChatActivity";
     @Bind(R.id.tv_username)
@@ -464,7 +464,6 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             sendCloudVideo();
         }
         getTop();
-
     }
     private boolean isKeyBoardshow = false;
 
@@ -709,7 +708,15 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        System.out.println("聊天Type"+datas.get(position).getChatType());
+        System.out.println("聊天Type"+datas);
+        String chat_type=datas.get(position).getChatType();
+        if("IMAGE".equals(chat_type)){
+            String url=datas.get(position).getTxt();
+            Intent intent=new Intent(FriendChatActivity.this,ImageDetailActivity.class);
+            intent.putExtra("url",url);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -986,7 +993,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                             int id = data.getIntExtra("id", -1);
 
                             if (id != -1) {
-                                Cursor cursor = sqLiteDatabase.rawQuery("select * from img where id = ?", new String[]{id + ""});
+                                Cursor cursor = sqLiteDatabase.rawQuery("select * from videoModel where id = ?", new String[]{id + ""});
                                 if (cursor != null) {
                                     while (cursor.moveToNext()) {
                                         title = cursor.getString(cursor.getColumnIndex("title"));
@@ -1022,7 +1029,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                                 timeEntity.setChatTime(chatTime);
                                 datas.add(timeEntity);
                             }
-                            chatEntity.setChatType("IMAGE");
+                            chatEntity.setChatType("VIDEO");
                             chatEntity.setTxt(imgPath);
                             ExtEntity extEntity = new ExtEntity();
                             extEntity.setVideoMD5(path);

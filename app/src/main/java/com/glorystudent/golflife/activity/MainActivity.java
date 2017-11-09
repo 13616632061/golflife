@@ -344,9 +344,9 @@ public class MainActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                         true, new PermissionsResultListener() {
                             @Override
                             public void onPermissionGranted() {
-//                                Intent intent = new Intent(MainActivity.this, RecActivity.class);
-//                                startActivityForAnimation(intent, R.anim.activity_bottom_top, R.anim.activity_no_anim);
-//                                rg.findViewById(R.id.rb_video).performClick();
+                                Intent intent = new Intent(MainActivity.this, RecActivity.class);
+                                startActivityForAnimation(intent, R.anim.activity_bottom_top, R.anim.activity_no_anim);
+                                rg.findViewById(R.id.rb_video).performClick();
                             }
 
                             @Override
