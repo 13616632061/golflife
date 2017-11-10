@@ -82,6 +82,9 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
     private OnUpAliyunListener onUpAliyunListener;
     private MediaPlayer mp;
     private ImageView saveImageView;
+    private ImageView iv ;
+    private ImageView iv_play ;
+    private TextView tv_progress;
 
     public void setOnUpAliyunListener(OnUpAliyunListener onUpAliyunListener) {
         this.onUpAliyunListener = onUpAliyunListener;
@@ -172,135 +175,25 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                                     context.startActivity(intent);
                                 }
                             });
-                        } else if (datas.getTextType().equals("4")) {
-                            //弹窗
-                            View inflate = LayoutInflater.from(context).inflate(R.layout.item_chat_imgtext_list, null);
-                            ImageView iv_img = (ImageView) inflate.findViewById(R.id.iv_img);
-                            TextView tv_message = (TextView) inflate.findViewById(R.id.tv_message);
-                            if (datas.getSystemExtMessageEntity().getPicPath() != null) {
-                                GlideUtil.loadImageView(context, datas.getSystemExtMessageEntity().getPicPath(), iv_img);
-                            }
-                            tv_message.setText(datas.getTxt());
-                            ll_layout2.addView(inflate);
-                            SystemExtMessageEntity.DialogBean dialog = datas.getSystemExtMessageEntity().getDialog();
-                            if (dialog != null) {
-                                ll_layout2.setTag(dialog);
-
-                                ll_layout2.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        final SystemExtMessageEntity.DialogBean tag = (SystemExtMessageEntity.DialogBean) v.getTag();
-                                        String title = tag.getButtonCallBack().getTitle();
-                                        if (title == null) {
-                                            title = "";
-                                        }
-                                        DialogUtil.getInstance().setOnShowDialogListener(new DialogUtil.OnShowDialogListener() {
-                                            @Override
-                                            public void onSure() {
-                                                SubscribeRequestEntity subscribeRequestEntity = new SubscribeRequestEntity();
-                                                SubscribeRequestEntity.AppointmentBean appointmentBean = new SubscribeRequestEntity.AppointmentBean();
-                                                appointmentBean.setCcoursedetailid(tag.getButtonCallBack().getCcoursedetailid());
-                                                appointmentBean.setAppointmentid(tag.getButtonCallBack().getAppointmentid());
-                                                subscribeRequestEntity.setAppointment(appointmentBean);
-                                                String request = new Gson().toJson(subscribeRequestEntity);
-                                                String requestJson = RequestAPI.getRequestJson(context, request);
-                                                Log.d(TAG, "onSure: --->" + requestJson);
-                                                String url = tag.getButtonCallBack().getOk();
-                                                OkGoRequest.getOkGoRequest().setOnOkGoUtilListener(new OkGoRequest.OnOkGoUtilListener() {
-                                                    @Override
-                                                    public void parseDatas(String json) {
-                                                        try {
-                                                            Log.d(TAG, "parseDatas: --->" + json);
-                                                            JSONObject jo = new JSONObject(json);
-                                                            String statuscode = jo.getString("statuscode");
-                                                            String statusmessage = jo.getString("statusmessage");
-                                                            if (statuscode.equals("1")) {
-                                                                ll_layout2.setClickable(false);
-                                                                Toast.makeText(context, "完成签课", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        } catch (Exception e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void requestFailed() {
-
-                                                    }
-                                                }).getEntityData(context, url, requestJson);
-                                            }
-
-                                            @Override
-                                            public void onCancel() {
-                                                SubscribeRequestEntity subscribeRequestEntity = new SubscribeRequestEntity();
-                                                SubscribeRequestEntity.AppointmentBean appointmentBean = new SubscribeRequestEntity.AppointmentBean();
-                                                appointmentBean.setCcoursedetailid(tag.getButtonCallBack().getCcoursedetailid());
-                                                subscribeRequestEntity.setAppointment(appointmentBean);
-                                                String request = new Gson().toJson(subscribeRequestEntity);
-                                                String requestJson = RequestAPI.getRequestJson(context, request);
-                                                String url = tag.getButtonCallBack().getCancel();
-                                                OkGoRequest.getOkGoRequest().setOnOkGoUtilListener(new OkGoRequest.OnOkGoUtilListener() {
-                                                    @Override
-                                                    public void parseDatas(String json) {
-                                                        try {
-                                                            Log.d(TAG, "parseDatas: --->" + json);
-                                                            JSONObject jo = new JSONObject(json);
-                                                            String statuscode = jo.getString("statuscode");
-                                                            String statusmessage = jo.getString("statusmessage");
-                                                            if (statuscode.equals("1")) {
-                                                                ll_layout2.setClickable(false);
-                                                                Toast.makeText(context, "取消签课", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        } catch (Exception e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void requestFailed() {
-
-                                                    }
-                                                }).getEntityData(context, url, requestJson);
-                                            }
-                                        }).showDialogButton3(context, title, "是否完成签课", "否", "是");
-                                    }
-                                });
-                            }
                         }
                     }
                     break;
-                case "VIDEO":
-                    //视频
+                case "IMAGE":
+                    //图片、视频
                     ll_layout2.setBackgroundColor(Color.TRANSPARENT);
                     ll_layout2.removeAllViews();
-                    View inflate = LayoutInflater.from(context).inflate(R.layout.item_chat_video_list, null);
-                    RelativeLayout rl_img = (RelativeLayout) inflate.findViewById(R.id.rl_video);
-                    ImageView iv_play = (ImageView) inflate.findViewById(R.id.iv_play);
-                    TextView tv_progress = (TextView) inflate.findViewById(R.id.tv_progress);
+                    View inflate = LayoutInflater.from(context).inflate(R.layout.item_chat_img_list, null);
+                    RelativeLayout rl_img = (RelativeLayout) inflate.findViewById(R.id.rl_img);
+                   iv = (ImageView) inflate.findViewById(R.id.iv_img);
+                   iv_play = (ImageView) inflate.findViewById(R.id.iv_play);
+                   tv_progress = (TextView) inflate.findViewById(R.id.tv_progress);
+                    Log.d(TAG, "bindDatas: --->我真是最了" + SharedUtil.getString(Constants.USER_ID) + " " + datas.getExt());
                     if (datas.getExt() != null) {
-                        if (!datas.getExt().getVideoMD5().contains("/")) {
-                            //下载
-                            iv_play.setVisibility(View.VISIBLE);
-                            rl_img.setTag(datas.getExt());
-                            rl_img.setOnClickListener(this);
-                        } else {
-                            //上传
-                            if (datas.getUpState() == 1) {
-                                datas.setUpState(2);
-                                upLoadVideo(iv_play, tv_progress,datas.getExt(), datas.getTxt());
-                            }
-                        }
+                        iv_play.setVisibility(View.VISIBLE);
                     } else {
                         tv_progress.setVisibility(View.GONE);
                         iv_play.setVisibility(View.GONE);
                     }
-                    break;
-                case "IMAGE":
-                    //图片
-                    ll_layout2.setBackgroundColor(Color.TRANSPARENT);
-                    ll_layout2.removeAllViews();
-                    View inflate_image = LayoutInflater.from(context).inflate(R.layout.item_chat_img_list, null);
-                    final ImageView iv = (ImageView)inflate_image.findViewById(R.id.iv_img);
                     Glide.with(context).load(datas.getTxt()).asBitmap().into(new SimpleTarget<Bitmap>() {
                         @Override
                         public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -318,7 +211,7 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                         }
                     });
                     GlideUtil.loadImageView(context, datas.getTxt(), iv);
-                    ll_layout2.addView(inflate_image);
+                    ll_layout2.addView(inflate);
                     break;
                 case "VOICE":
                     //发送语音
@@ -381,7 +274,6 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                             break;
                     }
                 }
-
                 LinearLayout ll_voice = (LinearLayout) v;
                 final ImageView iv = (ImageView) ll_voice.findViewById(R.id.iv_voice);
                 saveImageView = iv;
@@ -421,96 +313,7 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                     e.printStackTrace();
                 }
                 break;
-            case R.id.rl_video:
-                //下载视频
-                System.out.println("点击了视频");
-                RelativeLayout rl_img = (RelativeLayout) v;
-                final TextView tv_progress = (TextView) rl_img.findViewById(R.id.tv_progress);
-                ImageView iv_play = (ImageView) rl_img.findViewById(R.id.iv_play);
-                iv_play.setVisibility(View.GONE);
-                tv_progress.setVisibility(View.VISIBLE);
-                tv_progress.setText("0%");
-                ExtEntity ext = (ExtEntity) v.getTag();
-
-                String fileMD5;
-                String textMD5 = null;
-                String zipMD5 = ext.getZipMD5();
-                if (zipMD5 != null && !zipMD5.isEmpty()) {
-                    fileMD5 = ext.getVideoMD5();
-                    textMD5 = zipMD5;
-                } else {
-                    fileMD5 = ext.getVideoMD5();
-                }
-                final String tMD5 = textMD5;
-                final String tFolder = ext.getZipFolderPath();
-
-                downloadObject = ext.getVideoFolderPath() + "/" + fileMD5 + ".mp4";
-                Log.d("yiyiyi", "onClick: 测试--->" + downloadObject);
-                final Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
-                        String filename = System.currentTimeMillis() + ".mp4";
-                        GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(context));
-                        getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
-                            @Override
-                            public void onProgress(long sum, long current) {
-                                final long ss = sum;
-                                final long cu = current;
-                                //更新百分比进度
-                                tv_progress.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (cu != 0) {
-                                            float num = (float) cu / ss;
-                                            DecimalFormat df = new DecimalFormat("0.00");//格式化小数，.后跟几个零代表几位小数
-                                            String s = df.format(num);//返回的是String类型
-                                            Float aFloat = Float.valueOf(s);
-                                            float v = aFloat * 100;
-                                            int progess = (int) v;
-                                            if (tMD5 != null) {
-                                                if (progess > 99) {
-                                                    progess = 99;
-                                                }
-                                            }
-                                            tv_progress.setText(progess + "%");
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                        getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
-                            @Override
-                            public void onDownComplete(String path) {
-                                if (tMD5 != null) {
-                                    downLoadText(tMD5, tFolder, path, tv_progress);
-                                } else {
-                                    Intent intent = new Intent(context, VideoGraffitiActivity.class);
-                                    intent.putExtra("path", path);
-                                    context.startActivity(intent);
-                                }
-                            }
-                        });
-                        getObjectSamples.asyncGetObjectSample();
-                    }
-                });
-
-                AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
-                if (aliyunOSS != null) {
-                    setKeyId(aliyunOSS);
-                    thread.start();
-                } else {
-                    OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
-                        @Override
-                        public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
-                            setKeyId(aliyunRequestEntity);
-                            thread.start();
-                        }
-                    }).getAliyunOSS(context);
-                }
-                break;
-
-        }
+            }
     }
 
     /**
@@ -542,8 +345,6 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                                 tv_progress.setText("100%");
                             }
                         });
-                        Log.d(TAG, "onDownComplete: 下载TXT完成" + path);
-
                         Intent intent = new Intent(context, VideoGraffitiActivity.class);
                         intent.putExtra("path", pathMp4);
                         intent.putExtra("type", "2");
@@ -714,6 +515,7 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                                         iv_play.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
+                                                System.out.println("ext.getVideoMD5(  "+ext.getVideoMD5());
                                                 Intent intent = new Intent(context, VideoGraffitiActivity.class);
                                                 intent.putExtra("path", ext.getVideoMD5());
                                                 context.startActivity(intent);

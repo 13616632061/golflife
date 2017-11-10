@@ -3,20 +3,19 @@ package com.glorystudent.golflife.activity;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -31,6 +30,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflife.R;
@@ -52,6 +52,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -81,6 +82,8 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
     public SurfaceView mSurfaceview;
     @Bind(R.id.rv_rec_preview)
     public RecyclerView recyclerView;
+    @Bind(R.id.iv_rec_close)
+    ImageView ivRecClose;
 
     private MediaRecorder mRecorder;
     private SurfaceHolder mSurfaceHolder;
@@ -111,6 +114,7 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
     private boolean bIfPreview; //是否正在预览
     private String pathDir;//输出文件的目录
     private int screenWidth, screenHeight;
+    private boolean s_canlle_rec=false;//是否取消录制
 
     @Override
     protected int getContentId() {
@@ -132,9 +136,9 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
         screenHeight = metrics.heightPixels;
 
         datas = new LinkedList<>();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapter = new RecPreviewRecyclerAdapter(this);
-        recyclerView.setAdapter(adapter);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        adapter = new RecPreviewRecyclerAdapter(this);
+//        recyclerView.setAdapter(adapter);
         cbGuide.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -150,12 +154,14 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    s_canlle_rec=false;
                     ivFilming.setVisibility(View.VISIBLE);
                     ivFilming.setAnimation(flickerAnimation);
                     tvTime.setVisibility(View.VISIBLE);
                     tvTime.setText("00:00");
                     timeCount = 0;
                     rlToolbarLayout.setVisibility(View.GONE);
+                    ivRecClose.setVisibility(View.VISIBLE);
                     //开始录像
                     initRecord();
                     new Timer().schedule(new TimerTask() {
@@ -169,8 +175,11 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
                     ivFilming.setAnimation(null);
                     ivFilming.setVisibility(View.GONE);
                     tvTime.setVisibility(View.GONE);
-                    rlToolbarLayout.setVisibility(View.VISIBLE);
-                    stopRecording();
+                    rlToolbarLayout.setVisibility(View.GONE);
+                    ivRecClose.setVisibility(View.GONE);
+                    if(!s_canlle_rec){
+                        stopRecording();
+                    }
                 }
             }
         });
@@ -218,6 +227,31 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
             //保存到数据库
             saveDatabase();
             initCamera();
+            Intent intent=new Intent(RecActivity.this,FinishRecVideoActivity.class);
+            intent.putExtra("path",path);
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * TODO 取消录制
+     */
+    private void canellRecording() {
+        s_canlle_rec=true;
+        try {
+            handler.removeCallbacks(runnable);
+            if (mRecorder != null) {
+                mRecorder.stop();
+                mRecorder.reset();
+                mRecorder.release();
+                mRecorder = null;
+            }
+            if (camera != null) {
+                camera.lock();
+            }
+            initCamera();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -258,7 +292,7 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
             ContentValues contentValues = new ContentValues();
             contentValues.put("type", "1");//1拍摄的视频，2本地导入的视频，3正在合成的视频
             contentValues.put("path", path);
-            contentValues.put("date",RequestAPI.getCurrentTime());
+            contentValues.put("date", RequestAPI.getCurrentTime());
 
             String fileMD5 = FileToMD5Util.getFileMD5(new File(path));
             contentValues.put("fileMd5", fileMD5);
@@ -288,8 +322,8 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
         localVideoEntity.setPath(path);
         localVideoEntity.setTime(time);
         datas.addFirst(localVideoEntity);
-        System.out.println("录制的视频数据："+datas);
-        adapter.setDatas(datas);
+        System.out.println("录制的视频数据：" + datas);
+//        adapter.setDatas(datas);
     }
 
     /**
@@ -311,7 +345,7 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
      */
     public String getSDPath() {
         boolean sdCardExist = Environment.getExternalStorageState()
-                .equals(android.os.Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
+                .equals(Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
         if (sdCardExist) {
             return Environment.getExternalStorageDirectory().getPath();// 获取跟目录
         }
@@ -373,9 +407,10 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
 
     /**
      * TODO 点击事件监听
+     *
      * @param view
      */
-    @OnClick({R.id.back, R.id.iv_change, R.id.iv_delay, R.id.iv_light})
+    @OnClick({R.id.back, R.id.iv_change, R.id.iv_delay, R.id.iv_light,R.id.iv_rec_close})
     public void onclick(View view) {
         switch (view.getId()) {
             case R.id.back:
@@ -445,6 +480,12 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
                         break;
                 }
                 break;
+            case R.id.iv_rec_close:
+                canellRecording();
+                mBtnStartStop.setChecked(false);
+                Toast.makeText(RecActivity.this,"已取消录制",Toast.LENGTH_SHORT).show();
+                break;
+
         }
     }
 

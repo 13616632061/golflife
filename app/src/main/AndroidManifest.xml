@@ -346,7 +346,9 @@
         <activity android:name=".activity.VideoGraffitiActivity" />
         <activity android:name=".activity.ChooseVideoActivity" />
         <activity android:name=".activity.NewFriendActivity" />
-        <activity android:name=".activity.RecActivity"></activity>
+        <activity android:name=".activity.RecActivity" />
+        <activity android:name=".activity.ChatImageDetailActivity" />
+        <activity android:name=".activity.FinishRecVideoActivity"></activity>
     </application>
 
 </manifest>

@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,10 +43,17 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.oss.ClientConfiguration;
+import com.alibaba.sdk.android.oss.OSS;
+import com.alibaba.sdk.android.oss.OSSClient;
+import com.alibaba.sdk.android.oss.common.OSSLog;
+import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
+import com.alibaba.sdk.android.oss.common.auth.OSSPlainTextAKSKCredentialProvider;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
@@ -69,10 +77,12 @@ import com.glorystudent.golflife.entity.CloudVideoEntity;
 import com.glorystudent.golflife.entity.ExtEntity;
 import com.glorystudent.golflife.entity.FaceEntity;
 import com.glorystudent.golflife.entity.FriendsProfileEntity;
+import com.glorystudent.golflife.entity.GetObjectSamples;
 import com.glorystudent.golflife.entity.SystemExtMessageEntity;
 import com.glorystudent.golflife.util.AudioRecoderUtils;
 import com.glorystudent.golflife.util.Constants;
 import com.glorystudent.golflife.util.EventBusMapUtil;
+import com.glorystudent.golflife.util.FileUtil;
 import com.glorystudent.golflife.util.GetAmrDuration;
 import com.glorystudent.golflife.util.ImageUtil;
 import com.glorystudent.golflife.util.ScreenUtils;
@@ -95,6 +105,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -706,19 +717,191 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
      * @param position
      * @param id
      */
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        System.out.println("聊天Type"+datas.get(position).getChatType());
-        System.out.println("聊天Type"+datas);
-        String chat_type=datas.get(position).getChatType();
-        if("IMAGE".equals(chat_type)){
-            String url=datas.get(position).getTxt();
-            Intent intent=new Intent(FriendChatActivity.this,ImageDetailActivity.class);
-            intent.putExtra("url",url);
-            startActivity(intent);
-        }
+    private OSS oss;
+    private static String endpoint;
+    private static String accessKeyId;
+    private static String accessKeySecret;
+    private static String uploadFilePath;
+
+    private static String testBucket;
+    private static String uploadObject;
+    private static String downloadObject;
+    private LocalBroadcastManager localBroadcastManager;
+    public void setKeyId(AliyunRequestEntity aliyunRequestEntity) {
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        List<AliyunRequestEntity.ListsettingvalueBean> listsettingvalue = aliyunRequestEntity.getListsettingvalue();
+        accessKeyId = listsettingvalue.get(0).getSettingvalue();
+        accessKeySecret = listsettingvalue.get(1).getSettingvalue();
+        endpoint = "https://" + listsettingvalue.get(2).getSettingvalue() + ".aliyuncs.com";
+        testBucket = listsettingvalue.get(3).getSettingvalue();
+        setOss();
     }
 
+    public void setOss() {
+        OSSCredentialProvider credentialProvider = new OSSPlainTextAKSKCredentialProvider(accessKeyId, accessKeySecret);
+        ClientConfiguration conf = new ClientConfiguration();
+        conf.setConnectionTimeout(15 * 1000); // 连接超时，默认15秒
+        conf.setSocketTimeout(15 * 1000); // socket超时，默认15秒
+        conf.setMaxConcurrentRequest(5); // 最大并发请求书，默认5个
+        conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
+        OSSLog.enableLog();
+        oss = new OSSClient(this, endpoint, credentialProvider, conf);
+    }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+        String chat_type=datas.get(position).getChatType();
+        ExtEntity ext = datas.get(position).getExt();
+        System.out.println("聊天Type"+ext);
+        if("IMAGE".equals(chat_type)&&ext== null){//图片
+            String url=datas.get(position).getTxt();
+            Intent intent=new Intent(FriendChatActivity.this,ChatImageDetailActivity.class);
+            intent.putExtra("url",url);
+            startActivity(intent);
+        }else {//视频
+            String video_path=datas.get(position).getVideoPath();
+            System.out.println("聊天video_path "+video_path);
+            if(video_path!=null&&FileUtil.fileIsExists(video_path)){
+                    Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                    intent.putExtra("path",video_path);
+                    startActivity(intent);
+            }else {
+                //下载视频
+                RelativeLayout rl_img = (RelativeLayout) view;
+                final TextView tv_progress = (TextView) rl_img.findViewById(R.id.tv_progress);
+                ImageView iv_play = (ImageView) rl_img.findViewById(R.id.iv_play);
+                iv_play.setVisibility(View.GONE);
+                tv_progress.setVisibility(View.VISIBLE);
+                tv_progress.setText("0%");
+
+                String fileMD5;
+                String textMD5 = null;
+                String zipMD5 = ext.getZipMD5();
+                if (zipMD5 != null && !zipMD5.isEmpty()) {
+                    fileMD5 = ext.getVideoMD5();
+                    textMD5 = zipMD5;
+                } else {
+                    fileMD5 = ext.getVideoMD5();
+                }
+                final String tMD5 = textMD5;
+                final String tFolder = ext.getZipFolderPath();
+
+                downloadObject = ext.getVideoFolderPath() + "/" + fileMD5 + ".mp4";
+                final Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
+                        String filename = System.currentTimeMillis() + ".mp4";
+                        Log.d(TAG, "run: --->" + filename);
+                        GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(FriendChatActivity.this));
+                        getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
+                            @Override
+                            public void onProgress(long sum, long current) {
+                                final long ss = sum;
+                                final long cu = current;
+                                //更新百分比进度
+                                tv_progress.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (cu != 0) {
+                                            float num = (float) cu / ss;
+                                            DecimalFormat df = new DecimalFormat("0.00");//格式化小数，.后跟几个零代表几位小数
+                                            String s = df.format(num);//返回的是String类型
+                                            Float aFloat = Float.valueOf(s);
+                                            float v = aFloat * 100;
+                                            int progess = (int) v;
+                                            if (tMD5 != null) {
+                                                if (progess > 99) {
+                                                    progess = 99;
+                                                }
+                                            }
+                                            tv_progress.setText(progess + "%");
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
+                            @Override
+                            public void onDownComplete(String path) {
+                                Log.d(TAG, "onDownComplete: 视频--->下载完成" + path);
+                                if (tMD5 != null) {
+                                    downLoadText(tMD5, tFolder, path, tv_progress,position);
+                                } else {
+                                    System.out.println("path:"+path);
+                                    datas.get(position).setVideoPath(path);
+                                    chatListAdapter.notifyDataSetChanged();
+                                    Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                                    intent.putExtra("path", path);
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+                        getObjectSamples.asyncGetObjectSample();
+                    }
+                });
+                final String progress=tv_progress.getText().toString();
+                System.out.println("video_path= "+video_path);
+                    AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
+                    if (aliyunOSS != null) {
+                        setKeyId(aliyunOSS);
+                        thread.start();
+                    } else {
+                        Log.d(TAG, "getOssSucceed: ---->为空");
+                        OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
+                            @Override
+                            public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
+                                setKeyId(aliyunRequestEntity);
+                                thread.start();
+                            }
+                        }).getAliyunOSS(FriendChatActivity.this);
+                }
+            }
+        }
+    }
+    /**
+     * todo 下载TXT文件
+     * @param textMD5
+     * @param textFolder
+     * @param pathMp4
+     * @param tv_progress
+     */
+    private void downLoadText(String textMD5, String textFolder, final String pathMp4, final TextView tv_progress, final int mPosition) {
+        if (textMD5 != null) {
+            downloadObject = textFolder + "/" + textMD5 + ".zip";
+            String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
+            String filename = System.currentTimeMillis() + ".zip";
+            GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(FriendChatActivity.this));
+            getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
+                @Override
+                public void onProgress(long sum, long current) {
+
+                }
+            });
+            getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
+                @Override
+                public void onDownComplete(String path) {
+                    try {
+                        tv_progress.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                tv_progress.setText("100%");
+                            }
+                        });
+                        Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                        intent.putExtra("path", pathMp4);
+                        intent.putExtra("type", "2");
+                        intent.putExtra("zippath", path);
+                        startActivity(intent);
+                        System.out.println("path  "+pathMp4);
+                        System.out.println("zippath  "+path);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            getObjectSamples.asyncGetObjectSample();
+        }
+    }
     /**
      * TODO 自动轮播类
      * 自动轮播需要的类
@@ -1029,7 +1212,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                                 timeEntity.setChatTime(chatTime);
                                 datas.add(timeEntity);
                             }
-                            chatEntity.setChatType("VIDEO");
+                            chatEntity.setChatType("IMAGE");
                             chatEntity.setTxt(imgPath);
                             ExtEntity extEntity = new ExtEntity();
                             extEntity.setVideoMD5(path);
@@ -1393,6 +1576,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 timeEntity.setChatTime(chatTime);
                 headDatas.add(timeEntity);
             }
+            System.out.println("增加 "+type);
             chatEntity.setChatType(type);
             switch (type) {
                 case "TXT":
