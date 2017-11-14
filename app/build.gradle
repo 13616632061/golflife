@@ -69,4 +69,6 @@ dependencies {
     compile 'com.example.zhouwei.library:library:1.0.0'
     compile files('libs/nineoldandroids-2.4.0.jar')
     compile project(':saveimagelib')
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'junit:junit:4.12'
 }

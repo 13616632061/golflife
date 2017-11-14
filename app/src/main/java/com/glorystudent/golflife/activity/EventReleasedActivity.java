@@ -212,6 +212,7 @@ public class EventReleasedActivity extends BaseActivity {
                     releasedEvent();
                     break;
                 case FAILURE:
+                    dismissLoading();
                     break;
             }
             return false;
@@ -228,7 +229,6 @@ public class EventReleasedActivity extends BaseActivity {
      */
     @Override
     protected void init() {
-        showLoading();
         initRequestEntity();//初始化请求实体类
         Intent intent = getIntent();
         //判断是否是新增活动
@@ -660,7 +660,6 @@ public class EventReleasedActivity extends BaseActivity {
         //上传图片
         //清空已有图片
         releasedRequestEntity.getEventactivity().getListeventpic().clear();
-
         loadOss();
     }
 
@@ -668,7 +667,6 @@ public class EventReleasedActivity extends BaseActivity {
      * TODO 获取数据
      */
     private void loadOss() {
-
         AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
         if (aliyunOSS != null) {
             System.out.println("aliyunOSS1:");
@@ -696,9 +694,8 @@ public class EventReleasedActivity extends BaseActivity {
         conf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
         OSSLog.enableLog();
         oss = new OSSClient(getApplicationContext(), endpoint, credentialProvider, conf);
-        showLoading();
+        System.out.println("imageList.size()  "+imageList.size());
         for (int i = 0; i < imageList.size(); i++) {
-            Log.d(TAG, "setOss: --->路径" + imageList.get(i));
             if (imageList.get(i).contains("http")) {
                 //已经上传过了，不用上传了
                 ReleasedRequestEntity.EventactivityBean.ListeventpicBean bean = new ReleasedRequestEntity.EventactivityBean.ListeventpicBean();
@@ -719,6 +716,7 @@ public class EventReleasedActivity extends BaseActivity {
      * @param path
      */
     private void upLoadImages(String path) {
+        showLoading();
         String fileMD5 = FileToMD5Util.getFileMD5(new File(path));
         String uid = SharedUtil.getString(Constants.USER_ID);
         String userId = uid.replace("/", "");
@@ -1146,7 +1144,6 @@ public class EventReleasedActivity extends BaseActivity {
      * TODO 获取赛事活动数据
      */
     private void requestEventData() {
-        showLoading();
         CompetityRequestEntity competityRequestEntity = new CompetityRequestEntity();
         final CompetityRequestEntity.EventactivityBean eventactivityBean = new CompetityRequestEntity.EventactivityBean();
         eventactivityBean.setEventActivity_id(eventActivity_id);
@@ -1158,6 +1155,11 @@ public class EventReleasedActivity extends BaseActivity {
                 .tag(this)
                 .params("request",requestJson)
                 .execute(new StringCallback() {
+                    @Override
+                    public void onBefore(BaseRequest request) {
+//                            showLoading();
+                    }
+
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
                         try {
@@ -1338,7 +1340,6 @@ public class EventReleasedActivity extends BaseActivity {
                 }
             }
             labelGridAdapter.setDatas(labelList);
-            dismissLoading();
         } else if (!editFlag) { //新增时请求网络获取定义信息
             String requestJson = RequestAPI.getSignDefinition(this);
             Log.i(TAG, "loadDatas: " + requestJson);
@@ -1347,7 +1348,13 @@ public class EventReleasedActivity extends BaseActivity {
                     .params("request", requestJson)
                     .execute(new StringCallback() {
                         @Override
+                        public void onBefore(BaseRequest request) {
+//                                showLoading();
+                        }
+
+                        @Override
                         public void onSuccess(String s, Call call, Response response) {
+//                            dismissLoading();
                             try {
                                 JSONObject jo = new JSONObject(s);
                                 String statuscode = jo.getString("statuscode");
@@ -1364,12 +1371,11 @@ public class EventReleasedActivity extends BaseActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            dismissLoading();
                         }
 
                         @Override
                         public void onError(Call call, Response response, Exception e) {
-                            dismissLoading();
+//                            dismissLoading();
                             Toast.makeText(EventReleasedActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -1390,12 +1396,12 @@ public class EventReleasedActivity extends BaseActivity {
             location = locationManager.getLastKnownLocation(provider);
             if (location != null) {
                 if (editFlag) {
-                    dismissLoading();
                     return;
                 }
                 //获取附近的球场地址信息，并显示第一条数据
                 getNearbyCourt();
             } else {
+                Toast.makeText(this,"无法获得当前位置,请检查网络信号",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "initLocation: 无法获得当前位置");
             }
         } else {
@@ -1449,12 +1455,10 @@ public class EventReleasedActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        dismissLoading();
                     }
 
                     @Override
                     public void onError(Call call, Response response, Exception e) {
-                        dismissLoading();
                         Toast.makeText(EventReleasedActivity.this, "网络请求失败", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -1485,10 +1489,12 @@ public class EventReleasedActivity extends BaseActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onBefore(BaseRequest request) {
+                            showLoading();
                     }
 
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
+                        dismissLoading();
                         try {
                             JSONObject jo = new JSONObject(s);
                             String statuscode = jo.getString("statuscode");
@@ -1507,7 +1513,6 @@ public class EventReleasedActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        dismissLoading();
                     }
 
                     @Override
@@ -1534,6 +1539,7 @@ public class EventReleasedActivity extends BaseActivity {
                     }
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
+                        dismissLoading();
                         try {
                             JSONObject jo = new JSONObject(s);
                             System.out.println("新增活动:"+jo);
@@ -1547,7 +1553,6 @@ public class EventReleasedActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        dismissLoading();
                         releasedRequestEntity = null;
                         finish();
                     }

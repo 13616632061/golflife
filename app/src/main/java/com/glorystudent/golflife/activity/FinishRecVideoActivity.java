@@ -1,7 +1,10 @@
 package com.glorystudent.golflife.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.widget.ImageView;
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflibrary.util.GlideUtil;
 import com.glorystudent.golflife.R;
+import com.glorystudent.golflife.entity.LocalVideoEntity;
 import com.glorystudent.golflife.util.ImageUtil;
 
 import java.io.File;
@@ -34,6 +38,10 @@ public class FinishRecVideoActivity extends BaseActivity {
     Button btnSendfriend;
 
     private String path;
+    private String type;
+    private String zippath;
+    private int id;
+    private SQLiteDatabase sqLiteDatabase;
 
     @Override
     protected int getContentId() {
@@ -57,6 +65,19 @@ public class FinishRecVideoActivity extends BaseActivity {
                 GlideUtil.loadImageView(this, imgPath,ivRecVodeo);
             }catch (Exception e){
             }
+            sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(getDatabasePath("video.db"), null);
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from videoModel where path = ?", new String[]{path + ""});
+            int count = cursor.getCount();
+            if (cursor != null && count > 0) {
+                while (cursor.moveToPosition(count - 1)) {
+                     id = cursor.getInt(cursor.getColumnIndex("id"));
+                    count--;
+                    if (count < 0) {
+                        cursor.close();
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -71,8 +92,8 @@ public class FinishRecVideoActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_sendfriend:
-                Intent intent=new Intent(FinishRecVideoActivity.this,FriendChatActivity.class);
-                intent.putExtra("path",path);
+                Intent intent=new Intent(FinishRecVideoActivity.this,MyFriendActivity.class);
+                intent.putExtra("id",id);
                 startActivity(intent);
                 break;
         }

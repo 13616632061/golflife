@@ -8,8 +8,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,9 +24,11 @@ import android.widget.Toast;
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.util.ImageUtil;
+import com.glorystudent.golflife.util.TakePhotoUtil;
 import com.glorystudent.golflife.util.TimeUtil;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 
 import butterknife.Bind;
@@ -68,6 +72,7 @@ public class ReleasedAddImageActivity extends BaseActivity {
     private String curFormatDateStr = null;
     private String filePath;//文件路径
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected int getContentId() {
         return R.layout.activity_released_add_image;
@@ -203,6 +208,7 @@ public class ReleasedAddImageActivity extends BaseActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filePath)));
         startActivityForResult(intent, CAMERA_IMAGE_CODE);
+
     }
 
     /**

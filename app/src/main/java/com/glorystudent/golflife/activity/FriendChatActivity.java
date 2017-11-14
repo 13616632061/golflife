@@ -11,8 +11,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -25,6 +27,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -108,6 +111,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -204,6 +208,12 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
     private boolean isCalculate = true;
     private int bottomStatePx;
     private boolean isBiandong = false;
+    private String mPublicPhotoPath;
+    private String path;
+    private Uri uri;
+    private String rootUrl = null;//根目录
+    private String curFormatDateStr = null;
+
 
     @Override
     protected int getContentId() {
@@ -214,8 +224,8 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
     protected void init() {
         myDataBase=MyDataBase.getInstance(this);
         sqLiteDatabase=myDataBase.getWritableDatabase();
-//        sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(getDatabasePath("video.db"), null);
         lv_chat.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        rootUrl = Environment.getExternalStorageDirectory().getPath();
         /**
          * 聊天消息刷新
          */
@@ -226,9 +236,11 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 isRefresh = true;
                 List<EMMessage> msg = null;
                 if (datas != null) {
-                    msg = mConversation.loadMoreMsgFromDB(headMsgId, 20);
-                    if (msg != null && msg.size() > 0) {
-                        addMessageToHeader();
+                    if(mConversation!=null){
+                        msg = mConversation.loadMoreMsgFromDB(headMsgId, 20);
+                        if (msg != null && msg.size() > 0) {
+                            addMessageToHeader();
+                        }
                     }
                 }
                 chat_refresh.setRefreshState(isRefresh, ChatPullToRefreshLayout.SUCCEED);
@@ -257,7 +269,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             conversation.markAllMessagesAsRead();
             EventBus.getDefault().post(EventBusMapUtil.getIntMap(11, 1));
         }
-        if (phoneNumber.equals("00000")) {
+        if ("00000".equals(phoneNumber)) {
             tv_profile.setVisibility(View.GONE);
             ll_input.setVisibility(View.GONE);
             ll_bottom.setVisibility(View.GONE);
@@ -475,6 +487,11 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             sendCloudVideo();
         }
         getTop();
+        int video_id=intent.getIntExtra("id",-1);
+        System.out.println("video_id: "+video_id);
+        if(!TextUtils.isEmpty(video_id+"")&&video_id!=-1){
+            sendVoide(video_id);
+        }
     }
     private boolean isKeyBoardshow = false;
 
@@ -747,115 +764,134 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         OSSLog.enableLog();
         oss = new OSSClient(this, endpoint, credentialProvider, conf);
     }
+
+    /**
+     * TODO  聊天消息列表点击事件
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
         String chat_type=datas.get(position).getChatType();
         ExtEntity ext = datas.get(position).getExt();
         System.out.println("聊天Type"+ext);
-        if("IMAGE".equals(chat_type)&&ext== null){//图片
-            String url=datas.get(position).getTxt();
-            Intent intent=new Intent(FriendChatActivity.this,ChatImageDetailActivity.class);
-            intent.putExtra("url",url);
-            startActivity(intent);
-        }else {//视频
-            String video_path=datas.get(position).getVideoPath();
-            System.out.println("聊天video_path "+video_path);
-            if(video_path!=null&&FileUtil.fileIsExists(video_path)){
-                    Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
-                    intent.putExtra("path",video_path);
+        switch (chat_type){
+            case "IMAGE":
+                if(ext== null){//图片
+                    String url=datas.get(position).getTxt();
+                    Intent intent=new Intent(FriendChatActivity.this,ChatImageDetailActivity.class);
+                    intent.putExtra("url",url);
                     startActivity(intent);
-            }else {
-                //下载视频
-                RelativeLayout rl_img = (RelativeLayout) view;
-                final TextView tv_progress = (TextView) rl_img.findViewById(R.id.tv_progress);
-                ImageView iv_play = (ImageView) rl_img.findViewById(R.id.iv_play);
-                iv_play.setVisibility(View.GONE);
-                tv_progress.setVisibility(View.VISIBLE);
-                tv_progress.setText("0%");
+                }else {//视频
+                    String video_path = datas.get(position).getVideoPath();
+                    String video_md5=datas.get(position).getExt().getVideoMD5();
+                    System.out.println("VideoType "+datas.get(position).getVideoType());
+                    System.out.println("UpState "+datas.get(position).getUpState());
+                    System.out.println("聊天video_path " + video_path);
+                    if (video_path != null && FileUtil.fileIsExists(video_path)) {
+                        Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                        intent.putExtra("path", video_path);
+                        startActivity(intent);
+                    }else if(video_path==null&&video_md5.contains(".mp4")){
+                        Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                        intent.putExtra("path", video_md5);
+                        startActivity(intent);
+                    } else {
+                        //下载视频
+                        RelativeLayout rl_img = (RelativeLayout) view;
+                        final TextView tv_progress = (TextView) rl_img.findViewById(R.id.tv_progress);
+                        ImageView iv_play = (ImageView) rl_img.findViewById(R.id.iv_play);
+                        iv_play.setVisibility(View.GONE);
+                        tv_progress.setVisibility(View.VISIBLE);
+                        tv_progress.setText("0%");
 
-                String fileMD5;
-                String textMD5 = null;
-                String zipMD5 = ext.getZipMD5();
-                if (zipMD5 != null && !zipMD5.isEmpty()) {
-                    fileMD5 = ext.getVideoMD5();
-                    textMD5 = zipMD5;
-                } else {
-                    fileMD5 = ext.getVideoMD5();
-                }
-                final String tMD5 = textMD5;
-                final String tFolder = ext.getZipFolderPath();
+                        String fileMD5;
+                        String textMD5 = null;
+                        String zipMD5 = ext.getZipMD5();
+                        if (zipMD5 != null && !zipMD5.isEmpty()) {
+                            fileMD5 = ext.getVideoMD5();
+                            textMD5 = zipMD5;
+                        } else {
+                            fileMD5 = ext.getVideoMD5();
+                        }
+                        final String tMD5 = textMD5;
+                        final String tFolder = ext.getZipFolderPath();
 
-                downloadObject = ext.getVideoFolderPath() + "/" + fileMD5 + ".mp4";
-                final Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
-                        String filename = System.currentTimeMillis() + ".mp4";
-                        Log.d(TAG, "run: --->" + filename);
-                        GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(FriendChatActivity.this));
-                        getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
+                        downloadObject = ext.getVideoFolderPath() + "/" + fileMD5 + ".mp4";
+                        final Thread thread = new Thread(new Runnable() {
                             @Override
-                            public void onProgress(long sum, long current) {
-                                final long ss = sum;
-                                final long cu = current;
-                                //更新百分比进度
-                                tv_progress.post(new Runnable() {
+                            public void run() {
+                                String fileDirs = Environment.getExternalStorageDirectory().getPath() + "/golf/download/chat/";
+                                String filename = System.currentTimeMillis() + ".mp4";
+                                Log.d(TAG, "run: --->" + filename);
+                                GetObjectSamples getObjectSamples = new GetObjectSamples(oss, testBucket, downloadObject, fileDirs, filename, new ProgressBar(FriendChatActivity.this));
+                                getObjectSamples.setOnProgressListener(new GetObjectSamples.OnProgressListener() {
                                     @Override
-                                    public void run() {
-                                        if (cu != 0) {
-                                            float num = (float) cu / ss;
-                                            DecimalFormat df = new DecimalFormat("0.00");//格式化小数，.后跟几个零代表几位小数
-                                            String s = df.format(num);//返回的是String类型
-                                            Float aFloat = Float.valueOf(s);
-                                            float v = aFloat * 100;
-                                            int progess = (int) v;
-                                            if (tMD5 != null) {
-                                                if (progess > 99) {
-                                                    progess = 99;
+                                    public void onProgress(long sum, long current) {
+                                        final long ss = sum;
+                                        final long cu = current;
+                                        //更新百分比进度
+                                        tv_progress.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (cu != 0) {
+                                                    float num = (float) cu / ss;
+                                                    DecimalFormat df = new DecimalFormat("0.00");//格式化小数，.后跟几个零代表几位小数
+                                                    String s = df.format(num);//返回的是String类型
+                                                    Float aFloat = Float.valueOf(s);
+                                                    float v = aFloat * 100;
+                                                    int progess = (int) v;
+                                                    if (tMD5 != null) {
+                                                        if (progess > 99) {
+                                                            progess = 99;
+                                                        }
+                                                    }
+                                                    tv_progress.setText(progess + "%");
                                                 }
                                             }
-                                            tv_progress.setText(progess + "%");
+                                        });
+                                    }
+                                });
+                                getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
+                                    @Override
+                                    public void onDownComplete(String path) {
+                                        Log.d(TAG, "onDownComplete: 视频--->下载完成" + path);
+                                        if (tMD5 != null) {
+                                            downLoadText(tMD5, tFolder, path, tv_progress, position);
+                                        } else {
+                                            System.out.println("path:" + path);
+                                            datas.get(position).setVideoPath(path);
+                                            chatListAdapter.notifyDataSetChanged();
+                                            Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
+                                            intent.putExtra("path", path);
+                                            startActivity(intent);
                                         }
                                     }
                                 });
+                                getObjectSamples.asyncGetObjectSample();
                             }
                         });
-                        getObjectSamples.setOnDownSuccessListener(new GetObjectSamples.OnDownSuccessListener() {
-                            @Override
-                            public void onDownComplete(String path) {
-                                Log.d(TAG, "onDownComplete: 视频--->下载完成" + path);
-                                if (tMD5 != null) {
-                                    downLoadText(tMD5, tFolder, path, tv_progress,position);
-                                } else {
-                                    System.out.println("path:"+path);
-                                    datas.get(position).setVideoPath(path);
-                                    chatListAdapter.notifyDataSetChanged();
-                                    Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
-                                    intent.putExtra("path", path);
-                                    startActivity(intent);
+                        final String progress = tv_progress.getText().toString();
+                        System.out.println("video_path= " + video_path);
+                        AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
+                        if (aliyunOSS != null) {
+                            setKeyId(aliyunOSS);
+                            thread.start();
+                        } else {
+                            Log.d(TAG, "getOssSucceed: ---->为空");
+                            OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
+                                @Override
+                                public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
+                                    setKeyId(aliyunRequestEntity);
+                                    thread.start();
                                 }
-                            }
-                        });
-                        getObjectSamples.asyncGetObjectSample();
+                            }).getAliyunOSS(FriendChatActivity.this);
+                        }
                     }
-                });
-                final String progress=tv_progress.getText().toString();
-                System.out.println("video_path= "+video_path);
-                    AliyunRequestEntity aliyunOSS = RequestAPI.getAliyunOSS();
-                    if (aliyunOSS != null) {
-                        setKeyId(aliyunOSS);
-                        thread.start();
-                    } else {
-                        Log.d(TAG, "getOssSucceed: ---->为空");
-                        OkGoRequest.getOkGoRequest().setOnGetOssListener(new OkGoRequest.OnGetOssListener() {
-                            @Override
-                            public void getOssSucceed(AliyunRequestEntity aliyunRequestEntity) {
-                                setKeyId(aliyunRequestEntity);
-                                thread.start();
-                            }
-                        }).getAliyunOSS(FriendChatActivity.this);
                 }
-            }
+                break;
         }
     }
     /**
@@ -892,8 +928,6 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                         intent.putExtra("type", "2");
                         intent.putExtra("zippath", path);
                         startActivity(intent);
-                        System.out.println("path  "+pathMp4);
-                        System.out.println("zippath  "+path);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1074,62 +1108,25 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         });
         ll_more.addView(more);
     }
-    private String mPublicPhotoPath;
-    private String path;
-    private Uri uri;
-
     /**
      * TODO 拍照
      */
     private void startTake() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //判断是否有相机应用
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            //创建临时图片文件
-            File photoFile = null;
-            try {
-                photoFile = createPublicImageFile();
-            //设置Action为拍照
-            if (photoFile != null) {
-                takePictureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                //这里加入flag
-                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                Uri photoURI = FileProvider.getUriForFile(this, FriendChatActivity.this.getPackageName() + ".fileprovider", photoFile);
-                List<ResolveInfo> resInfoList= getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                for (ResolveInfo resolveInfo : resInfoList) {
-                    String packageName = FriendChatActivity.this.getPackageName();
-                    grantUriPermission(packageName, photoURI,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, 0x864);
-            }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("拍照error："+e.toString());
+        Log.i(TAG, "takePhoto: 拍照选取");
+        curFormatDateStr = TimeUtil.getImageNameTime(Calendar.getInstance().getTime());
+        mPublicPhotoPath = rootUrl + "/golf/camera/" + "IMG_" + curFormatDateStr + ".png";
+        File file = new File(mPublicPhotoPath);
+        if (!file.exists()) {
+            File dirs = new File(file.getParent());
+            if (!dirs.exists()) {
+                dirs.mkdirs();
             }
         }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(mPublicPhotoPath)));
+        startActivityForResult(intent, 0x864);
         //将照片添加到相册中
         ImageUtil.galleryAddPic(mPublicPhotoPath, this);
-    }
-    /**
-     * TODO 创建临时图片文件
-     *
-     * @return
-     * @throws IOException
-     */
-    public  File createPublicImageFile() throws IOException {
-        File path = null;
-        if (ImageUtil.hasSdcard()) {
-            path = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DCIM);
-        }
-        Date date = new Date();
-        String timeStamp = TimeUtil.getTimelocale(date,"yyyyMMdd_HHmmss", Locale.CHINA);
-        String imageFileName = "Camera/" + "IMG_" + timeStamp + ".jpg";
-        File image = new File(path, imageFileName);
-        mPublicPhotoPath = image.getAbsolutePath();
-        return image;
     }
     //发送视频
     private void sendVideo() {
@@ -1169,64 +1166,8 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 case 0x056:
                     if (data != null) {
                         try {
-                            String path = null;
-                            String title = null;
-                            String type = null;
-                            String zippath = null;
                             int id = data.getIntExtra("id", -1);
-
-                            if (id != -1) {
-                                Cursor cursor = sqLiteDatabase.rawQuery("select * from videoModel where id = ?", new String[]{id + ""});
-                                if (cursor != null) {
-                                    while (cursor.moveToNext()) {
-                                        title = cursor.getString(cursor.getColumnIndex("title"));
-                                        path = cursor.getString(cursor.getColumnIndex("path"));
-                                        type = cursor.getString(cursor.getColumnIndex("type"));
-                                        zippath = cursor.getString(cursor.getColumnIndex("zippath"));
-                                    }
-                                }
-                            }
-                            Log.d(TAG, "onActivityResult: --->获得id" + id + " " + path + " " + zippath);
-                            //获取第一帧
-                            MediaMetadataRetriever media = new MediaMetadataRetriever();
-                            media.setDataSource(path);
-                            Bitmap bitmap = media.getFrameAtTime(1);
-                            long timeMillis = System.currentTimeMillis();
-                            String sdCardPath = ImageUtil.getSDCardPath();
-                            File file = ImageUtil.saveFile(bitmap, sdCardPath, timeMillis + ".jpg");
-                            String imgPath = file.getPath();
-                            ChatEntity chatEntity = new ChatEntity();
-                            chatEntity.setUsername(SharedUtil.getString(Constants.PHONE_NUMBER));
-                            String chatTime = TimeUtil.getChatTime(System.currentTimeMillis());
-                            boolean isExist = true;
-                            for (int i = 0; i < saveTime.size(); i++) {
-                                if (chatTime.equals(chatTime)) {
-                                    isExist = false;
-                                    break;
-                                }
-                            }
-
-                            if (isExist) {
-                                saveTime.add(chatTime);
-                                ChatEntity timeEntity = new ChatEntity();
-                                timeEntity.setChatTime(chatTime);
-                                datas.add(timeEntity);
-                            }
-                            chatEntity.setChatType("IMAGE");
-                            chatEntity.setTxt(imgPath);
-                            ExtEntity extEntity = new ExtEntity();
-                            extEntity.setVideoMD5(path);
-                            String userid = SharedUtil.getString(Constants.USER_ID);
-                            String replaceUserId = userid.replace("/", "");
-                            extEntity.setVideoFolderPath(replaceUserId + "/videos");
-                            if (type != null && type.equals("2")) {
-                                extEntity.setZipMD5(zippath);
-                                extEntity.setZipFolderPath(replaceUserId + "/videos");
-                            }
-                            chatEntity.setExt(extEntity);
-                            chatEntity.setUpState(1);
-                            datas.add(chatEntity);
-                            chatListAdapter.setDatas(datas);
+                            sendVoide(id);
                         } catch (Exception e) {
                             e.getStackTrace();
                         }
@@ -1234,12 +1175,90 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                     break;
                 case 0x864://拍照
                     if (resultCode != Activity.RESULT_OK) return;
+                    System.out.println("mPublicPhotoPath: "+mPublicPhotoPath);
                     uri = Uri.parse(mPublicPhotoPath);
                     sendImage(uri,2);
                     break;
             }
         }
 
+    }
+
+    /**
+     * todo 发送视频
+     */
+    private void sendVoide(int id){
+        if(saveTime==null){
+            saveTime=new ArrayList<>();
+            System.out.println("saveTime ");
+        }
+        if(datas==null){
+            datas=new ArrayList<>();
+            System.out.println("datas");
+        }
+        if(chatListAdapter==null){
+            chatListAdapter=new ChatListAdapter(this);
+            System.out.println("chatListAdapter");
+        }
+        String path = null;
+        String type = null;
+        String zippath = null;
+        if (id != -1) {
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from videoModel where id = ?", new String[]{id + ""});
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    path = cursor.getString(cursor.getColumnIndex("path"));
+                    type = cursor.getString(cursor.getColumnIndex("type"));
+                    zippath = cursor.getString(cursor.getColumnIndex("zippath"));
+                }
+            }
+        }
+        System.out.println("视频path： "+path);
+        MediaMetadataRetriever media = new MediaMetadataRetriever();
+        media.setDataSource(path);
+        Bitmap bitmap = media.getFrameAtTime(1);
+        long timeMillis = System.currentTimeMillis();
+        String sdCardPath = ImageUtil.getSDCardPath();
+        File file = null;
+        try {
+            file = ImageUtil.saveFile(bitmap, sdCardPath, timeMillis + ".jpg");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String imgPath = file.getPath();
+        ChatEntity chatEntity = new ChatEntity();
+        chatEntity.setUsername(SharedUtil.getString(Constants.PHONE_NUMBER));
+        String chatTime = TimeUtil.getChatTime(System.currentTimeMillis());
+        boolean isExist = true;
+        for (int i = 0; i < saveTime.size(); i++) {
+            if (chatTime.equals(chatTime)) {
+                isExist = false;
+                break;
+            }
+        }
+
+        if (isExist) {
+            saveTime.add(chatTime);
+            ChatEntity timeEntity = new ChatEntity();
+            timeEntity.setChatTime(chatTime);
+            datas.add(timeEntity);
+        }
+        chatEntity.setChatType("IMAGE");
+        chatEntity.setTxt(imgPath);
+        ExtEntity extEntity = new ExtEntity();
+        extEntity.setVideoMD5(path);
+        String userid = SharedUtil.getString(Constants.USER_ID);
+        String replaceUserId = userid.replace("/", "");
+        extEntity.setVideoFolderPath(replaceUserId + "/videos");
+        if (type != null && type.equals("2")) {
+            extEntity.setZipMD5(zippath);
+            extEntity.setZipFolderPath(replaceUserId + "/videos");
+        }
+        chatEntity.setExt(extEntity);
+        chatEntity.setUpState(1);
+        datas.add(chatEntity);
+        System.out.println("视频datas： "+datas);
+        chatListAdapter.setDatas(datas);
     }
     /**
      * TODO 发送图片

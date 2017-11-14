@@ -95,7 +95,7 @@ public class GolfChatAdapter extends BaseExpandableListAdapter {
 
         GroupEntity groupEntity = datas.get(groupPosition);
         String groupName = groupEntity.getGroupName();
-        if(groupName.equals("GolfLife好友")){
+        if("GolfLife好友".equals(groupName)){
             groupViewHolder.iv_chat_headpic.setImageResource(R.drawable.icon_chat_golffriend);
         }
         if(isExpanded){

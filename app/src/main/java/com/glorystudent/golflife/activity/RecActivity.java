@@ -197,6 +197,8 @@ public class RecActivity extends BaseActivity implements SurfaceHolder.Callback 
         mRecorder = new MediaRecorder();
         if (camera != null) {
             camera.unlock();
+        }else {
+            initCamera();
         }
         mRecorder.setCamera(camera);
         // 这两项需要放在setOutputFormat之前

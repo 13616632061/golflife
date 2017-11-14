@@ -59,6 +59,9 @@ import cn.sharesdk.framework.PlatformActionListener;
 import okhttp3.Call;
 import okhttp3.Response;
 
+/**
+ * TODO 赛事详情
+ */
 public class EventDetailActivity extends BaseActivity implements PlatformActionListener {
 
     private final static String TAG = "EventDetailActivity";
@@ -128,13 +131,19 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
     protected void loadDatas() {
 
         WebSettings settings = webView.getSettings();
+        //设置WebView是否允许执行JavaScript脚本，默认false，不允许
         settings.setJavaScriptEnabled(true);
-        // 设置可以访问文件
+        //是否开启本地DOM存储  可处理一些手机显示空白问题
+        settings.setDomStorageEnabled(true);
+        //设置自适应屏幕宽度
         settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+
         settings.setDefaultTextEncodingName("utf-8");
+        //设置是否支持缩放
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-        settings.setLoadWithOverviewMode(true);
+
         //设置缓存，否则后台重定向返回后导致缓存丢失
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         //android5.0以上不显示图片的解决办法
@@ -193,21 +202,6 @@ public class EventDetailActivity extends BaseActivity implements PlatformActionL
                 return super.shouldOverrideUrlLoading(view, url);
             }
         });
-//        webView.setWebChromeClient(new WebChromeClient() {
-//
-//            @Override
-//            public void onProgressChanged(WebView view, int newProgress) {
-//                if (newProgress == 100) {
-//                    // 网页加载完成
-//                    pb.setVisibility(View.GONE);
-//                } else {
-//                    // 加载中
-//                    pb.setVisibility(View.VISIBLE);
-//                    pb.setProgress(newProgress);
-//                }
-//                super.onProgressChanged(view, newProgress);
-//            }
-//        });
         setWebChromeClient();//处理android系统webView调用H5文件上传JS无反应操作
         if (id != -1) {
             weburl = String.format(ConstantsURL.EVENT_DETAIL_URL, id, SharedUtil.getString(Constants.USER_ID));

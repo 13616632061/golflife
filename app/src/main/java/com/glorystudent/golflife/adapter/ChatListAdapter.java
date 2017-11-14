@@ -189,7 +189,17 @@ public class ChatListAdapter extends AbsMoreBaseAdapter<ChatEntity> implements V
                    tv_progress = (TextView) inflate.findViewById(R.id.tv_progress);
                     Log.d(TAG, "bindDatas: --->我真是最了" + SharedUtil.getString(Constants.USER_ID) + " " + datas.getExt());
                     if (datas.getExt() != null) {
-                        iv_play.setVisibility(View.VISIBLE);
+                        if (!datas.getExt().getVideoMD5().contains("/")) {
+                            //下载
+                            iv_play.setVisibility(View.VISIBLE);
+                            rl_img.setTag(datas.getExt());
+                        } else {
+                            //上传
+                            if (datas.getUpState() == 1) {
+                                datas.setUpState(2);
+                                upLoadVideo(iv_play, tv_progress, datas.getExt(), datas.getTxt());
+                            }
+                        }
                     } else {
                         tv_progress.setVisibility(View.GONE);
                         iv_play.setVisibility(View.GONE);
