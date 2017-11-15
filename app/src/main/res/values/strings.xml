@@ -204,6 +204,7 @@
     <string name="send_friend">发送给朋友</string>
     <string name="finish_rec_video">完成录像</string>
     <string name="my_friend">我的好友</string>
+    <string name="no_message">暂无消息</string>
 
 
     <item name="tag_text" type="id"></item>

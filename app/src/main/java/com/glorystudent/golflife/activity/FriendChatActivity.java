@@ -1,32 +1,28 @@
 package com.glorystudent.golflife.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -65,7 +61,6 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.glorystudent.golflibrary.base.BaseActivity;
 import com.glorystudent.golflibrary.util.SharedUtil;
-import com.glorystudent.golflife.Manifest;
 import com.glorystudent.golflife.R;
 import com.glorystudent.golflife.adapter.ChatListAdapter;
 import com.glorystudent.golflife.adapter.FaceGridAdapter;
@@ -98,7 +93,6 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMImageMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMVoiceMessageBody;
-import com.hyphenate.util.ImageUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -109,22 +103,21 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * TODO 好友聊天页面
  */
-public class FriendChatActivity extends BaseActivity implements TextView.OnEditorActionListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener{
+public class FriendChatActivity extends BaseActivity implements TextView.OnEditorActionListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
     private final static String TAG = "FriendChatActivity";
     @Bind(R.id.tv_username)
@@ -222,8 +215,8 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     @Override
     protected void init() {
-        myDataBase=MyDataBase.getInstance(this);
-        sqLiteDatabase=myDataBase.getWritableDatabase();
+        myDataBase = MyDataBase.getInstance(this);
+        sqLiteDatabase = myDataBase.getWritableDatabase();
         lv_chat.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         rootUrl = Environment.getExternalStorageDirectory().getPath();
         /**
@@ -236,7 +229,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 isRefresh = true;
                 List<EMMessage> msg = null;
                 if (datas != null) {
-                    if(mConversation!=null){
+                    if (mConversation != null) {
                         msg = mConversation.loadMoreMsgFromDB(headMsgId, 20);
                         if (msg != null && msg.size() > 0) {
                             addMessageToHeader();
@@ -256,16 +249,16 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
         sdCardPath1 = ImageUtil.getSDCardPath();
         Intent intent = getIntent();
-        String userName="";
-        if(intent!=null){
+        String userName = "";
+        if (intent != null) {
             userName = intent.getStringExtra("username");
             phoneNumber = intent.getStringExtra("phonenumber");
         }
-        System.out.println("userName="+userName +" phoneNumber : "+ phoneNumber );
+        System.out.println("userName=" + userName + " phoneNumber : " + phoneNumber);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(phoneNumber);
         //指定会话消息未读数清零
         if (conversation != null) {
-            System.out.println("conversation" );
+            System.out.println("conversation");
             conversation.markAllMessagesAsRead();
             EventBus.getDefault().post(EventBusMapUtil.getIntMap(11, 1));
         }
@@ -487,12 +480,13 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             sendCloudVideo();
         }
         getTop();
-        int video_id=intent.getIntExtra("id",-1);
-        System.out.println("video_id: "+video_id);
-        if(!TextUtils.isEmpty(video_id+"")&&video_id!=-1){
+        int video_id = intent.getIntExtra("id", -1);
+        System.out.println("video_id: " + video_id);
+        if (!TextUtils.isEmpty(video_id + "") && video_id != -1) {
             sendVoide(video_id);
         }
     }
+
     private boolean isKeyBoardshow = false;
 
     @Override
@@ -660,7 +654,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             @Override
             public void onClick(View v) {
                 String content = et_input.getText().toString();
-                System.out.println("消息内容："+content);
+                System.out.println("消息内容：" + content);
                 if (content != null && !content.isEmpty()) {
                     sendHuanxinMessage(content, phoneNumber);
                 }
@@ -744,6 +738,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
     private static String uploadObject;
     private static String downloadObject;
     private LocalBroadcastManager localBroadcastManager;
+
     public void setKeyId(AliyunRequestEntity aliyunRequestEntity) {
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         List<AliyunRequestEntity.ListsettingvalueBean> listsettingvalue = aliyunRequestEntity.getListsettingvalue();
@@ -767,6 +762,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * TODO  聊天消息列表点击事件
+     *
      * @param parent
      * @param view
      * @param position
@@ -774,27 +770,27 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        String chat_type=datas.get(position).getChatType();
+        String chat_type = datas.get(position).getChatType();
         ExtEntity ext = datas.get(position).getExt();
-        System.out.println("聊天Type"+ext);
-        switch (chat_type){
+        System.out.println("聊天Type" + ext);
+        switch (chat_type) {
             case "IMAGE":
-                if(ext== null){//图片
-                    String url=datas.get(position).getTxt();
-                    Intent intent=new Intent(FriendChatActivity.this,ChatImageDetailActivity.class);
-                    intent.putExtra("url",url);
+                if (ext == null) {//图片
+                    String url = datas.get(position).getTxt();
+                    Intent intent = new Intent(FriendChatActivity.this, ChatImageDetailActivity.class);
+                    intent.putExtra("url", url);
                     startActivity(intent);
-                }else {//视频
+                } else {//视频
                     String video_path = datas.get(position).getVideoPath();
-                    String video_md5=datas.get(position).getExt().getVideoMD5();
-                    System.out.println("VideoType "+datas.get(position).getVideoType());
-                    System.out.println("UpState "+datas.get(position).getUpState());
+                    String video_md5 = datas.get(position).getExt().getVideoMD5();
+                    System.out.println("VideoType " + datas.get(position).getVideoType());
+                    System.out.println("UpState " + datas.get(position).getUpState());
                     System.out.println("聊天video_path " + video_path);
                     if (video_path != null && FileUtil.fileIsExists(video_path)) {
                         Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
                         intent.putExtra("path", video_path);
                         startActivity(intent);
-                    }else if(video_path==null&&video_md5.contains(".mp4")){
+                    } else if (video_path == null && video_md5.contains(".mp4")) {
                         Intent intent = new Intent(FriendChatActivity.this, VideoGraffitiActivity.class);
                         intent.putExtra("path", video_md5);
                         startActivity(intent);
@@ -894,8 +890,10 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 break;
         }
     }
+
     /**
      * todo 下载TXT文件
+     *
      * @param textMD5
      * @param textFolder
      * @param pathMp4
@@ -936,6 +934,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             getObjectSamples.asyncGetObjectSample();
         }
     }
+
     /**
      * TODO 自动轮播类
      * 自动轮播需要的类
@@ -1034,7 +1033,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
      */
     private void reQuestFriendDetail() {
         showLoading();
-        String requestJson = RequestAPI. QueryFriend(this, phoneNumber);
+        String requestJson = RequestAPI.QueryFriend(this, phoneNumber);
         Log.i(TAG, "reQuestFriendDetail: " + requestJson);
         OkGoRequest.getOkGoRequest().setOnOkGoUtilListener(new OkGoRequest.OnOkGoUtilListener() {
             @Override
@@ -1085,7 +1084,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         iv_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    intoPhotoAlbum();
+                intoPhotoAlbum();
             }
         });
 
@@ -1108,6 +1107,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         });
         ll_more.addView(more);
     }
+
     /**
      * TODO 拍照
      */
@@ -1128,6 +1128,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         //将照片添加到相册中
         ImageUtil.galleryAddPic(mPublicPhotoPath, this);
     }
+
     //发送视频
     private void sendVideo() {
         Intent intent = new Intent();
@@ -1160,7 +1161,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 case 0x158://相册
                     if (data == null) return;
                     uri = data.getData();
-                    sendImage(uri,1);
+                    sendImage(uri, 1);
 
                     break;
                 case 0x056:
@@ -1175,9 +1176,9 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                     break;
                 case 0x864://拍照
                     if (resultCode != Activity.RESULT_OK) return;
-                    System.out.println("mPublicPhotoPath: "+mPublicPhotoPath);
+                    System.out.println("mPublicPhotoPath: " + mPublicPhotoPath);
                     uri = Uri.parse(mPublicPhotoPath);
-                    sendImage(uri,2);
+                    sendImage(uri, 2);
                     break;
             }
         }
@@ -1187,17 +1188,17 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
     /**
      * todo 发送视频
      */
-    private void sendVoide(int id){
-        if(saveTime==null){
-            saveTime=new ArrayList<>();
+    private void sendVoide(int id) {
+        if (saveTime == null) {
+            saveTime = new ArrayList<>();
             System.out.println("saveTime ");
         }
-        if(datas==null){
-            datas=new ArrayList<>();
+        if (datas == null) {
+            datas = new ArrayList<>();
             System.out.println("datas");
         }
-        if(chatListAdapter==null){
-            chatListAdapter=new ChatListAdapter(this);
+        if (chatListAdapter == null) {
+            chatListAdapter = new ChatListAdapter(this);
             System.out.println("chatListAdapter");
         }
         String path = null;
@@ -1213,7 +1214,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 }
             }
         }
-        System.out.println("视频path： "+path);
+        System.out.println("视频path： " + path);
         MediaMetadataRetriever media = new MediaMetadataRetriever();
         media.setDataSource(path);
         Bitmap bitmap = media.getFrameAtTime(1);
@@ -1257,30 +1258,31 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
         chatEntity.setExt(extEntity);
         chatEntity.setUpState(1);
         datas.add(chatEntity);
-        System.out.println("视频datas： "+datas);
+        System.out.println("视频datas： " + datas);
         chatListAdapter.setDatas(datas);
     }
+
     /**
      * TODO 发送图片
      *
      * @param uri
      * @param type 1相册获取 图片 2拍照
      */
-    private void sendImage(Uri uri,int type) {
-        if(type==1){
+    private void sendImage(Uri uri, int type) {
+        if (type == 1) {
             int sdkVersion = Integer.valueOf(Build.VERSION.SDK);
             if (sdkVersion >= 19) {  // 或者 android.os.Build.VERSION_CODES.KITKAT这个常量的值是19
                 path = this.uri.getPath();//5.0直接返回的是图片路径 Uri.getPath is ：  /document/image:46 ，5.0以下是一个和数据库有关的索引值
                 // path_above19:/storage/emulated/0/girl.jpg 这里才是获取的图片的真实路径
-                path =ImageUtil.getPath_above19(this, this.uri);
+                path = ImageUtil.getPath_above19(this, this.uri);
             } else {
                 path = ImageUtil.getFilePath_below19(this, this.uri);
             }
-        }else {
-           path = uri.getPath();
+        } else {
+            path = uri.getPath();
         }
         //imagePath为图片本地路径，false为不发送原图（默认超过100k的图片会压缩后发给对方），需要发送原图传true
-        System.out.println("图片path:"+path);
+        System.out.println("图片path:" + path);
         EMMessage imageSendMessage = EMMessage.createImageSendMessage(path, false, phoneNumber);
         //如果是群聊，设置chattype，默认是单聊
         EMClient.getInstance().chatManager().sendMessage(imageSendMessage);
@@ -1306,6 +1308,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             }
         });
     }
+
     /**
      * todo 开始底部设置
      */
@@ -1358,6 +1361,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * todo 开始底部编辑
+     *
      * @param softHeight
      */
     private void startBottomEditAnimator(int softHeight) {
@@ -1436,6 +1440,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * TODO 发送环信消息
+     *
      * @param content
      * @param toChatUsername
      */
@@ -1448,14 +1453,14 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             @Override
             public void onSuccess() {
                 // 消息发送成功，打印下日志，正常操作应该去刷新ui
-                System.out.println("发送消息成功："+content);
+                System.out.println("发送消息成功：" + content);
                 mHandler.sendEmptyMessage(0x002);
             }
 
             @Override
             public void onError(int i, String s) {
                 // 消息发送失败，打印下失败的信息，正常操作应该去刷新ui
-                System.out.println("发送消息失败："+s);
+                System.out.println("发送消息失败：" + s);
                 Log.i("lzan13", "send message on error " + i + " - " + s);
             }
 
@@ -1595,7 +1600,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
                 timeEntity.setChatTime(chatTime);
                 headDatas.add(timeEntity);
             }
-            System.out.println("增加 "+type);
+            System.out.println("增加 " + type);
             chatEntity.setChatType(type);
             switch (type) {
                 case "TXT":
@@ -1658,6 +1663,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * TODO 发送本地视频
+     *
      * @param chatEntity
      */
     private void sendNativeVideo(final ChatEntity chatEntity) {
@@ -1728,6 +1734,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * TODO 发送分享视频
+     *
      * @param picPath
      */
     private void sendShareVideo(String picPath) {
@@ -1777,6 +1784,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
 
     /**
      * TODO EvenBus处理
+     *
      * @param map
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -1792,14 +1800,16 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             }
         }
     }
+
     /**
      * TODO 检查相机权限
      */
     private static final int REQUEST_CAMERA_ACCESS_PERMISSION = 1;
     private static final int REQUEST_WRITE_STORAGE_PERMISSION = 2;
+
     private void checkCameraPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_ACCESS_PERMISSION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_ACCESS_PERMISSION);
         } else {
             checkWriteStoragePermission();
         }
@@ -1809,15 +1819,17 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
      * TODO 检查写入SDK权限
      */
     private void checkWriteStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE_PERMISSION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE_PERMISSION);
         } else {
 //            takeCameraSend();
             startTake();
         }
     }
+
     /**
      * TODO 获取权限接口
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -1841,6 +1853,7 @@ public class FriendChatActivity extends BaseActivity implements TextView.OnEdito
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

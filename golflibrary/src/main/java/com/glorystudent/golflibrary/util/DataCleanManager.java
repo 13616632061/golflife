@@ -17,7 +17,7 @@ public class DataCleanManager {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             cacheSize += getFolderSize(context.getExternalCacheDir());
         }
-        String path = Environment.getExternalStorageDirectory().getPath() + "/golf";
+        String path = Environment.getExternalStorageDirectory().getPath() + "/golf";//项目在SDK中建立的文件夹
         File file = new File(path);
         if (file.exists()) {
             cacheSize += getFolderSize(file);
@@ -41,10 +41,12 @@ public class DataCleanManager {
     private static boolean deleteDir(File dir) {
         if (dir != null && dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
+            if(children!=null){
+                for (int i = 0; i < children.length; i++) {
+                    boolean success = deleteDir(new File(dir, children[i]));
+                    if (!success) {
+                        return false;
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.glorystudent.golflife.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ import com.glorystudent.golflife.api.ConstantsURL;
 import com.glorystudent.golflife.api.OkGoRequest;
 import com.glorystudent.golflife.api.RequestAPI;
 import com.glorystudent.golflife.util.Constants;
+import com.glorystudent.golflife.util.TimeUtil;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 
@@ -45,6 +48,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.Bind;
@@ -53,7 +57,7 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 /**
- * TODO 设置头像页面
+ * TODO 设置个人头像页面
  */
 public class HeadPortraitActivity extends BaseActivity implements View.OnClickListener, OkGoRequest.OnOkGoUtilListener {
 
@@ -67,6 +71,12 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
     @Bind(R.id.head_portrait_iv)
     public ImageView mImage;
     public Bitmap mbitmap;
+
+    private static final int REQUEST_CAMERA_ACCESS_PERMISSION = 1;
+    private static final int REQUEST_WRITE_STORAGE_PERMISSION = 2;
+    private String rootUrl = null;//根目录
+    private String curFormatDateStr = null;
+    private String filePath;//文件路径
 
 
     @Override
@@ -149,7 +159,8 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
             case R.id.photograph:
                 window.dismiss();
                 //拍照
-                takeCameraOnly();
+                checkCameraPermission();
+//                takeCameraOnly();
                 break;
             case R.id.photo_album:
                 window.dismiss();
@@ -182,6 +193,45 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
             startActivityForResult(intent, RESULT_CAMERA_ONLY);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    /**
+     * TODO 开启相机
+     */
+    private void startCamera() {
+        rootUrl = Environment.getExternalStorageDirectory().getPath();
+        curFormatDateStr = TimeUtil.getImageNameTime(Calendar.getInstance().getTime());
+        filePath = rootUrl + "/golf/camera/" + "IMG_" + curFormatDateStr + ".png";
+        File file = new File(filePath);
+        if (!file.exists()) {
+            File dirs = new File(file.getParent());
+            if (!dirs.exists()) {
+                dirs.mkdirs();
+            }
+        }
+        imageUri=Uri.fromFile(new File(filePath));
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, RESULT_CAMERA_ONLY);}
+    /**
+     * TODO 检查相机权限
+     */
+    private void checkCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_ACCESS_PERMISSION);
+        } else {
+            checkWriteStoragePermission();
+        }
+    }
+
+    /**
+     * TODO 检查写入SDK权限
+     */
+    private void checkWriteStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE_PERMISSION);
+        } else {
+            startCamera();
         }
     }
     //TODO 共同调用裁剪
@@ -237,7 +287,30 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
             break;
         }
     }
-
+    /**
+     * TODO 开启权限结果
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CAMERA_ACCESS_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkWriteStoragePermission();
+            } else {
+                Toast.makeText(this, "相机权限开启失败", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_WRITE_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera();
+            } else {
+                Toast.makeText(this, "写入权限开启失败", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
     /**
      * TODO 获得sdk路径
      * @return
@@ -288,6 +361,8 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
             if(statuscode.equals("1")){
                 mImage.setImageBitmap(mbitmap);
                 String failePath = jo.getString("failePath");
+                System.out.println("failePath: " +failePath
+                        );
                 SharedUtil.putString(Constants.HEAD_PORTRAIT, failePath);
                 editUser(failePath);
                 //将选择好的图片更新到其他页面
@@ -318,6 +393,7 @@ public class HeadPortraitActivity extends BaseActivity implements View.OnClickLi
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(String s, Call call, Response response) {
+                        System.out.println("保存个人头像; "+s);
                         try {
                             JSONObject jo = new JSONObject(s);
                             String statuscode = jo.getString("statuscode");
